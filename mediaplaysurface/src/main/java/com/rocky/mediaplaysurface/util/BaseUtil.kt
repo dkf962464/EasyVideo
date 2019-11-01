@@ -37,9 +37,9 @@ object BaseUtil {
         ).toInt()
     }
 
-    fun isServiceRunning(mContext: Context, className: String): Boolean {
+    fun isServiceRunning(mContext: Context?, className: String?): Boolean {
         var isRunning = false
-        val activityManager = mContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val activityManager = mContext!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val serviceList = activityManager.getRunningServices(30)
         if (serviceList.size <= 0) {
             return false

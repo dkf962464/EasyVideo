@@ -26,6 +26,7 @@
 -keepattributes *Annotation*,InnerClasses
 -keepattributes Signature
 -verbose
+-keep class kotlin.Metadata { *; }
 -ignorewarning
 -optimizations !code/simplification/cast,!field/*,!class/merging/*
 
@@ -36,7 +37,7 @@
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
-<<<<<<< HEAD
+
 -keep public class * extends android.view.View
 -keep public class com.android.vending.licensing.ILicensingService
 
@@ -47,13 +48,6 @@
 -keep public class * extends android.support.v4.**
 -keep public class * extends android.support.v7.**
 -keep public class * extends android.support.annotation.**
-=======
--keep public class com.android.vending.licensing.ILicensingService
-
-
-
-
->>>>>>> a4b50ce2e2ce48e12ca62d5cccf4aba476c07e1c
 
 # 保留R下面的资源
 -keep class **.R$* {*;}
