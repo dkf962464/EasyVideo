@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         video=findViewById(R.id.video)
-        video!!.loadVideo("http://fs.mv.web.kugou.com/201910311048/4a89be6f0c3c014e2565c1f38a37e9ae/G166/M07/03/05/hpQEAF0u3O6ARzfrB0zyu51EJJM877.mp4")
+        video!!.loadVideo("http://fs.mv.web.kugou.com/201911011520/9681b920561b685e20c559ecbebe05c1/G166/M07/03/05/hpQEAF0u3O6ARzfrB0zyu51EJJM877.mp4")
     }
 
     fun click(v: View){

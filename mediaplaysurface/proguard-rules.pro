@@ -19,17 +19,16 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile`
--optimizationpasses 5
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
--verbose
 -dontskipnonpubliclibraryclassmembers
 -dontpreverify
 -keepattributes *Annotation*,InnerClasses
 -keepattributes Signature
+-verbose
 -ignorewarning
 -optimizations !code/simplification/cast,!field/*,!class/merging/*
--keep class kotlin.Metadata { *; }
+
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Appliction
 -keep public class * extends android.app.Service
@@ -37,8 +36,9 @@
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
--keep public class com.android.vending.licensing.ILicensingService
 -keep public class * extends android.view.View
+-keep public class com.android.vending.licensing.ILicensingService
+
 # 保留support下的所有类及其内部类
 -keep class android.support.** {*;}
 
@@ -49,11 +49,3 @@
 
 # 保留R下面的资源
 -keep class **.R$* {*;}
-
--keep public class * extends android.view.View{
-    *** get*();
-    void set*(***);
-    public <init>(android.content.Context);
-    public <init>(android.content.Context, android.util.AttributeSet);
-    public <init>(android.content.Context, android.util.AttributeSet, int);
-}
