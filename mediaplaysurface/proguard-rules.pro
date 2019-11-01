@@ -38,14 +38,10 @@
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
 -keep public class com.android.vending.licensing.ILicensingService
--keep public class * extends android.view.View
-# 保留support下的所有类及其内部类
--keep class android.support.** {*;}
 
-# 保留继承的
--keep public class * extends android.support.v4.**
--keep public class * extends android.support.v7.**
--keep public class * extends android.support.annotation.**
+
+
+
 
 # 保留R下面的资源
 -keep class **.R$* {*;}
