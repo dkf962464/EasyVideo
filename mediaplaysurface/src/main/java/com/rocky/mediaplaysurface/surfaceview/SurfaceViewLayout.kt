@@ -15,7 +15,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import com.rocky.mediaplaysurface.R
@@ -89,11 +88,11 @@ class SurfaceViewLayout : ConstraintLayout {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 BaseUtil.setLandScreenStatusBarState(context as Activity)
             }
-            layoutParams=LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             surfaceViewParams=LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             if (null!=mediaPlaySurfaceView){
                 mediaPlaySurfaceView!!.layoutParams=surfaceViewParams
             }
+            layoutParams=LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             setWeight(currentParams, currentTime, 0.4f)
             setWeight(allTimeParams, allTime, 0.4f)
