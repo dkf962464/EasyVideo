@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="XTextView">
+        <attr name="textContent" format="string" />
+        <attr name="textSize" format="dimension" />
+        <attr name="textColor" format="color" />
+        <attr name="textSpacingMult" format="float" />
+        <attr name="textSpacingAdd" format="float" />
+        <attr name="textXAlignment" format="string" />
+    </declare-styleable>
+    <declare-styleable name="MaskFaiterView">
+        <attr name="text" format="string" />
+        <attr name="font_size" format="dimension" />
+        <attr name="draw_color" format="color" />
+    </declare-styleable>
+    <declare-styleable name="SurfaceViewLayout">
+        <attr name="progressDrawable" format="reference" />
+        <attr name="thumb" format="reference" />
+        <attr name="fullScreen" format="reference" />
+        <attr name="exitFullScreen" format="reference" />
+        <attr name="playPauseIcon" format="reference" />
+        <attr name="startTimeColor" format="color" />
+        <attr name="endTimeColor" format="color" />
+        <attr name="bottomBackgroundColor" format="color" />
+        <attr name="seekBarHeight" format="dimension" />
+    </declare-styleable>
+</resources>
