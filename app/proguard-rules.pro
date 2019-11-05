@@ -1,8 +1,8 @@
 -flattenpackagehierarchy
 -allowaccessmodification
 -keepattributes Exceptions,InnerClasses,Signature,SourceFile,LineNumberTable,
+-dontwarn
 -ignorewarnings
--dontwarn org.apache.http.**
 #kotlin
 -keep class kotlin.** { *; }
 -keep class kotlin.Metadata { *; }

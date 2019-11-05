@@ -42,7 +42,7 @@ class MediaPlaySurfaceView : SurfaceView {
     private var CURRENT_TIME = 1
     private var mHandler: Handler
     private var playerUrl: String? = null
-    private lateinit var connection: ServiceConnection
+    private var connection: ServiceConnection
     private var current: TextView? = null
     private var allTime: TextView? = null
     private var seekBar: SeekBar? = null
