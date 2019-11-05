@@ -13,10 +13,8 @@
 -keepclassmembers class kotlin.Metadata {
     public <methods>;
 }
+ -keep class com.rocky.mediaplaysurface.surfaceview.*
 
--keepclassmembers class  com.rocky.mediaplaysurface.surfaceview{
- public *;
-}
 
 
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
