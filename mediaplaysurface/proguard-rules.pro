@@ -1,7 +1,6 @@
 -flattenpackagehierarchy
 -allowaccessmodification
 -keepattributes Exceptions,InnerClasses,Signature,SourceFile,LineNumberTable,
--dontskipnonpubliclibraryclassmembers
 -ignorewarnings
 -dontwarn org.apache.http.**
 #kotlin
