@@ -5,12 +5,12 @@
 -ignorewarnings
 #kotlin
 
--keep class kotlin.Metadata { *; }
--dontwarn kotlin.**
+
+-dontwarn
 -keepclassmembers class **$WhenMappings {
     <fields>;
 }
- -keep class com.rocky.mediaplaysurface.surfaceview.*
+
 -keepclassmembers class com.rocky.mediaplaysurface.surfaceview.*{
     public void loadVideo();
     public void playVideo();
@@ -52,9 +52,7 @@
     @com.google.gson.annotations.SerializedName <fields>;
 }
 
-#bean
--keep class com.yidejia.net.data.bean.** { *; }
--keep class com.yidejia.net.data.db.entity.** { *; }
+
 #greenDAO
 -keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
 public static java.lang.String TABLENAME;
@@ -77,15 +75,8 @@ public static java.lang.String TABLENAME;
 -keep class com.qiniu.**{public <init>();}
 -ignorewarnings
 
-#player
--keep public class cn.jzvd.JZMediaSystem {*; }
--keep public class cn.jzvd.demo.CustomMedia.CustomMedia {*; }
--keep public class cn.jzvd.demo.CustomMedia.JZMediaIjk {*; }
--keep public class cn.jzvd.demo.CustomMedia.JZMediaSystemAssertFolder {*; }
 
--keep class tv.danmaku.ijk.media.player.** {*; }
--dontwarn tv.danmaku.ijk.media.player.*
--keep interface tv.danmaku.ijk.media.player.** { *; }
+
 
 # ProGuard configurations for Bugtags
 -keepattributes LineNumberTable,SourceFile
