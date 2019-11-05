@@ -1,9 +1,10 @@
 package com.rocky.mediaplaysurface.surfaceview
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -12,13 +13,18 @@ import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import com.rocky.mediaplaysurface.R
 import com.rocky.mediaplaysurface.util.BaseUtil
+import com.rocky.mediaplaysurface.util.StatusBarUtil
+import com.rocky.mediaplaysurface.util.StatusBarUtil.immersive
 
 /**
  * create by 2019/10/29
@@ -53,10 +59,11 @@ class SurfaceViewLayout : ConstraintLayout {
     private var UPDATE_PAUSE_ICON: Int = 1
     private var params: LayoutParams? = null
     private var surfaceViewParams: LayoutParams? = null
-
+    private var pg:Int=0
     constructor(context: Context?) : super(context) {
         Log.e("aaa666", "constructor")
     }
+
 
     constructor(context: Context?, attr: AttributeSet?) : super(context, attr) {
         context!!
@@ -74,6 +81,7 @@ class SurfaceViewLayout : ConstraintLayout {
     }
 
     //横竖屏切换
+    @SuppressLint("ObsoleteSdkInt")
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
         val currentParams: LayoutParams = currentTime!!.layoutParams as LayoutParams
@@ -94,6 +102,7 @@ class SurfaceViewLayout : ConstraintLayout {
             }
             layoutParams=LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            BaseUtil.showStatusBar(context as Activity)
             setWeight(currentParams, currentTime, 0.4f)
             setWeight(allTimeParams, allTime, 0.4f)
             setWeight(playPauseParams, playPause, 0.2f)
@@ -110,6 +119,7 @@ class SurfaceViewLayout : ConstraintLayout {
             inflater = LayoutInflater.from(context)
         }
         mHandler = initHandler()
+
         view = inflater!!.inflate(R.layout.default_video_controller, this, false)
         currentTime = view!!.findViewById(R.id.current_time)
         allTime = view!!.findViewById(R.id.all_time)
@@ -131,15 +141,23 @@ class SurfaceViewLayout : ConstraintLayout {
                 Log.e("videoisRun", "playVideo")
             }
         }
+        settingSeekBarSlideTounch(seekBar)
     }
-
     private fun initData() {
+        val value: Activity =  context as Activity
         currentTime!!.setTextColor(startTimeColor!!)
         allTime!!.setTextColor(endTimeColor!!)
         if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             fullScreenView!!.setImageDrawable(fullScreen)
         } else {
             fullScreenView!!.setImageDrawable(exitFullScreen)
+        }
+        fullScreenView!!.setOnClickListener {
+            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                value.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            } else {
+                value.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+            }
         }
         playPause!!.setImageDrawable(playPauseIcon)
         seekBar!!.progressDrawable = progressDrawable
@@ -159,6 +177,7 @@ class SurfaceViewLayout : ConstraintLayout {
         val resolveHeight = mediaPlaySurfaceView!!.resolveSize(measuredHeight, heightMeasureSpec, 1)
         setMeasuredDimension(resolveWidth!!, resolveHeight!!)
         initData()
+        BaseUtil.clearAnim(context) //清除横竖屏切换的动画，避免卡顿
     }
 
     fun loadVideo(playUrl: String) {
@@ -189,6 +208,7 @@ class SurfaceViewLayout : ConstraintLayout {
         if (null != mediaPlaySurfaceView) mediaPlaySurfaceView!!.destory()
     }
 
+
     private fun initHandler(): Handler {
         return Handler(Looper.getMainLooper()) {
             when (it.what) {
@@ -206,4 +226,32 @@ class SurfaceViewLayout : ConstraintLayout {
             false
         }
     }
+
+    private fun settingSeekBarSlideTounch(seekBar: SeekBar?){
+        seekBar!!.setOnSeekBarChangeListener(object:SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                pg=progress
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                seekBar!!.progress=pg
+                mediaPlaySurfaceView!!.getBinder().seekTo(pg)
+            }
+        })
+    }
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (ev.hashCode()== MotionEvent.BUTTON_BACK){
+            val activity:Activity= context as Activity
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                return true
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+
 }
