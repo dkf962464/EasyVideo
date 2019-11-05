@@ -4,16 +4,18 @@
 -dontwarn
 -ignorewarnings
 #kotlin
--keep class kotlin.** { *; }
+
 -keep class kotlin.Metadata { *; }
 -dontwarn kotlin.**
 -keepclassmembers class **$WhenMappings {
     <fields>;
 }
--keepclassmembers class kotlin.Metadata {
-    public <methods>;
-}
  -keep class com.rocky.mediaplaysurface.surfaceview.*
+-keepclassmembers class com.rocky.mediaplaysurface.surfaceview.*{
+    public void loadVideo();
+    public void playVideo();
+    public void resolveSize();
+}
 
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
     static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
