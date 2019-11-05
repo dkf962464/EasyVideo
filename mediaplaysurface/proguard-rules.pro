@@ -10,13 +10,13 @@
 -keepclassmembers class **$WhenMappings {
     <fields>;
 }
- -keep class com.rocky.mediaplaysurface.surfaceview.*
--keepclassmembers class com.rocky.mediaplaysurface.surfaceview.*{
+ -keep class com.rocky.mediaplaysurface.surfaceview.SurfaceViewLayout{
     public void loadVideo();
-    public void playVideo();
-    public void resolveSize();
-}
-
+ }
+  -keep class com.rocky.mediaplaysurface.surfaceview.MediaPlaySurfaceView{
+      public void playVideo();
+          public void resolveSize();
+  }
 
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
     static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
