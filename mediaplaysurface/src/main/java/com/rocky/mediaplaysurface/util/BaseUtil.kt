@@ -39,21 +39,21 @@ object BaseUtil {
         ).toInt()
     }
 
-    fun isServiceRunning(mContext: Context?, className: String?): Boolean {
-        var isRunning = false
-        val activityManager = mContext!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val serviceList = activityManager.getRunningServices(30)
-        if (serviceList.size <= 0) {
-            return false
-        }
-        for (i in serviceList.indices) {
-            if (serviceList[i].service.className == className) {
-                isRunning = true
-                break
-            }
-        }
-        return isRunning
-    }
+//    fun isServiceRunning(mContext: Context?, className: String?): Boolean {
+//        var isRunning = false
+//        val activityManager = mContext!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+//        val serviceList = activityManager.getRunningServices(30)
+//        if (serviceList.size <= 0) {
+//            return false
+//        }
+//        for (i in serviceList.indices) {
+//            if (serviceList[i].service.className == className) {
+//                isRunning = true
+//                break
+//            }
+//        }
+//        return isRunning
+//    }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)

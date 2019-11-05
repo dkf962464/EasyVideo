@@ -59,7 +59,7 @@ class MediaPlaySurfaceView : SurfaceView {
     }
 
     init {
-        if (!BaseUtil.isServiceRunning(context, "com.rocky.mediaplaysurface.services.VideoServices")) {
+//        if (!BaseUtil.isServiceRunning(context, "com.rocky.mediaplaysurface.services.VideoServices")) {
             connection = object : ServiceConnection {
                 override fun onServiceDisconnected(name: ComponentName?) {
                 }
@@ -74,7 +74,7 @@ class MediaPlaySurfaceView : SurfaceView {
                 connection,
                 Context.BIND_AUTO_CREATE
             )
-        }
+//        }
         mHandler = initHandler()
         addCallBack()
 
