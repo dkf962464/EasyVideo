@@ -14,9 +14,11 @@
     public <methods>;
 }
  -keep class com.rocky.mediaplaysurface.surfaceview.*
--keepclassmembers class class com.rocky.mediaplaysurface.surfaceview.* {
-     public *;
-  }
+-keepclassmembers class  com.rocky.mediaplaysurface.surfaceview{
+ public *;
+}
+
+
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
     static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
 }
