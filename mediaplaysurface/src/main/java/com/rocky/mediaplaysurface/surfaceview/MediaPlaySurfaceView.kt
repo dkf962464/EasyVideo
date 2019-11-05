@@ -43,8 +43,8 @@ class MediaPlaySurfaceView : SurfaceView {
     private var CURRENT_TIME = 1
     private var mHandler: Handler
     private var playerUrl: String? = null
-    @NotNull
-    private var connection: ServiceConnection
+
+    private var connection: ServiceConnection?=null
     private var current: TextView? = null
     private var allTime: TextView? = null
     private var seekBar: SeekBar? = null
@@ -73,7 +73,7 @@ class MediaPlaySurfaceView : SurfaceView {
             }
             this.context.bindService(
                 Intent(this.context, VideoServices::class.java),
-                connection,
+                connection!!,
                 Context.BIND_AUTO_CREATE
             )
 //        }
