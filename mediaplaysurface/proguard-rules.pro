@@ -1,6 +1,6 @@
 -flattenpackagehierarchy
 -allowaccessmodification
--keepattributes Exceptions,InnerClasses,Signature,SourceFile,LineNumberTable,
+-keepattributes Exceptions,InnerClasses,Signature,SourceFile,LineNumberTable
 -dontwarn
 -ignorewarnings
 #kotlin

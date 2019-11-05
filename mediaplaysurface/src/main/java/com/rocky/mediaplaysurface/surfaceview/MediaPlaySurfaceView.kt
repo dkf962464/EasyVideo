@@ -22,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.rocky.mediaplaysurface.services.VideoServices
 import com.rocky.mediaplaysurface.util.BaseUtil
+import org.jetbrains.annotations.NotNull
 import kotlin.math.max
 
 /**
@@ -42,6 +43,7 @@ class MediaPlaySurfaceView : SurfaceView {
     private var CURRENT_TIME = 1
     private var mHandler: Handler
     private var playerUrl: String? = null
+    @NotNull
     private var connection: ServiceConnection
     private var current: TextView? = null
     private var allTime: TextView? = null
