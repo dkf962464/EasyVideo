@@ -13,7 +13,7 @@
             app:startTimeColor="@android:color/white"
             app:endTimeColor="@android:color/white"
             app:fullScreen="@drawable/full"
-            app:thumb="@drawable/thumeseekbar"
+            app:thumb="@drawable/seekbar_thume"
             app:playPauseIcon="@drawable/play_pause_selecter"
             app:progressDrawable="@drawable/seekbar_style"
             app:exitFullScreen="@drawable/exit_full"
@@ -33,6 +33,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="wrap_content"
             android:text="第五人格"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:onClick="click"
     />

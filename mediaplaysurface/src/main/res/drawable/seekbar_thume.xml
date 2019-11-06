@@ -8,7 +8,7 @@
     <gradient
         android:centerX="0.5"
         android:centerY="0.5"
-        android:startColor="@color/seek_bar_color"
+        android:startColor="@color/seek_bar_progress"
         android:gradientRadius="13dp"
         android:type="radial" />
 </shape>

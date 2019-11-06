@@ -142,6 +142,7 @@ class SurfaceViewLayout : ConstraintLayout {
             }
         }
         settingSeekBarSlideTounch(seekBar)
+        isFocusableInTouchMode=true
     }
     private fun initData() {
         val value: Activity =  context as Activity
@@ -169,6 +170,7 @@ class SurfaceViewLayout : ConstraintLayout {
         params!!.bottomToBottom = R.id.medially_view_id
         view!!.layoutParams = params
         addView(view)
+
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -242,16 +244,16 @@ class SurfaceViewLayout : ConstraintLayout {
             }
         })
     }
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        if (ev.hashCode()== MotionEvent.BUTTON_BACK){
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode== KeyEvent.KEYCODE_BACK){
             val activity:Activity= context as Activity
             if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                 return true
             }
         }
-        return super.dispatchTouchEvent(ev)
+        return super.onKeyDown(keyCode, event)
     }
-
 
 }

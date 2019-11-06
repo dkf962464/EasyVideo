@@ -4,16 +4,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.res.Configuration
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnCompletionListener
 import android.net.Uri
-import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
@@ -22,7 +20,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.rocky.mediaplaysurface.services.VideoServices
 import com.rocky.mediaplaysurface.util.BaseUtil
-import org.jetbrains.annotations.NotNull
+import java.text.BreakIterator
 import kotlin.math.max
 
 /**
@@ -44,11 +42,18 @@ class MediaPlaySurfaceView : SurfaceView {
     private var mHandler: Handler
     private var playerUrl: String? = null
 
-    private var connection: ServiceConnection?=null
+    private var connection: ServiceConnection? = null
     private var current: TextView? = null
     private var allTime: TextView? = null
     private var seekBar: SeekBar? = null
     private var videoAllTime: Int? = 0
+    private var downX: Float? = 0f
+    private var downY: Float? = 0f
+    private var moveX: Float? = 0f
+    private var moveY: Float? = 0f
+    private var JULI: Float = 10f
+    private var upMoveX: Float? = 0f
+    private var currentProgress: Int? = 0
 
     //java new
     constructor(context: Context?) : super(context) {
@@ -62,24 +67,53 @@ class MediaPlaySurfaceView : SurfaceView {
 
     init {
 //        if (!BaseUtil.isServiceRunning(context, "com.rocky.mediaplaysurface.services.VideoServices")) {
-            connection = object : ServiceConnection {
-                override fun onServiceDisconnected(name: ComponentName?) {
-                }
-
-                override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                    binder = service as VideoServices.VideoBinder?
-                    Log.e("service", "启动成功" + (null == binder))
-                }
+        connection = object : ServiceConnection {
+            override fun onServiceDisconnected(name: ComponentName?) {
             }
-            this.context.bindService(
-                Intent(this.context, VideoServices::class.java),
-                connection!!,
-                Context.BIND_AUTO_CREATE
-            )
+
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                binder = service as VideoServices.VideoBinder?
+                Log.e("service", "启动成功" + (null == binder))
+            }
+        }
+        this.context.bindService(
+            Intent(this.context, VideoServices::class.java),
+            connection!!,
+            Context.BIND_AUTO_CREATE
+        )
 //        }
         mHandler = initHandler()
         addCallBack()
-
+        setOnTouchListener { v, event ->
+            currentProgress = getBinder().getCurrenPostion()
+            when (event.action) {
+                MotionEvent.ACTION_MOVE -> {
+                    Log.e("actionEvent", "ACTION_MOVE")
+                    moveX = event.rawX
+                    moveY = event.rawY
+                    if ( Math.abs(moveY!! - downY!!)> 20f) {
+                        if (moveX!! > upMoveX!!) {
+                            upMoveX = moveX
+                            currentProgress = currentProgress!!.plus(300)
+                            Log.e("currentProgress", "++++++" + currentProgress!!)
+                        } else {
+                            upMoveX = moveX
+                            currentProgress = currentProgress!! -300
+                           Log.e("currentProgress", "-------" + currentProgress!!)
+                        }
+                    }
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    Log.e("actionEvent", "ACTION_DOWN")
+                    downX = event.rawX
+                    downY = event.rawY
+                }
+                MotionEvent.ACTION_UP -> {
+                    Log.e("actionEvent", "ACTION_UP")
+                }
+            }
+            true
+        }
     }
 
 
@@ -93,7 +127,7 @@ class MediaPlaySurfaceView : SurfaceView {
     /**
      * type: 0 width 1 height
      * */
-     fun resolveSize(measureSize: Int?, measureSpec: Int?, type: Int?): Int? {
+    fun resolveSize(measureSize: Int?, measureSpec: Int?, type: Int?): Int? {
         measureSpec!!
         measureSize!!
         val mode = MeasureSpec.getMode(measureSpec)
@@ -101,13 +135,13 @@ class MediaPlaySurfaceView : SurfaceView {
         when (mode) {
             MeasureSpec.EXACTLY -> {
                 ms = size
-                Log.e("EXACTLY","EXACTLY")
+                Log.e("EXACTLY", "EXACTLY")
             }
             MeasureSpec.AT_MOST -> {
                 if (type == 0) {
                     val metrics = resources.displayMetrics
                     ms = metrics.widthPixels
-                } else if(type==1) {
+                } else if (type == 1) {
                     ms = BaseUtil.dp2px(context, 220f)
                 }
             }
@@ -150,6 +184,7 @@ class MediaPlaySurfaceView : SurfaceView {
         }
     }
 
+
     private fun startVideo() {
         if (null != binder) {
             mHandler.removeMessages(VIDEO)
@@ -184,7 +219,7 @@ class MediaPlaySurfaceView : SurfaceView {
         visibility = View.VISIBLE
     }
 
-     fun destory() {
+    fun destory() {
         context.unbindService(connection!!)
     }
 
@@ -196,6 +231,7 @@ class MediaPlaySurfaceView : SurfaceView {
     fun getBinder(): VideoServices.VideoBinder {
         return binder!!
     }
+
 
     private fun addCallBack() {
         holder.addCallback(object : SurfaceHolder.Callback {
