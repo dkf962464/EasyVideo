@@ -10,8 +10,7 @@
 #-keepclassmembers class **$WhenMappings {
 #    <fields>;
 #}
-# -keep class com.rocky.mediaplaysurface.surfaceview.SurfaceViewLayout{
-#    public void loadVideo();
+# -keep class com.rocky.mediaplaysurface.surfaceview.EasyVideoublic void loadVideo();
 # }
 #  -keep class com.rocky.mediaplaysurface.surfaceview.MediaPlaySurfaceView{
 #      public void playVideo();

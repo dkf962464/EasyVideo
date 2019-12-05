@@ -1,4 +1,4 @@
-package com.rocky.newringtones.base.baseutil
+package com.rocky.kotlinplaysurface
 
 import android.os.Handler
 import android.os.Looper
@@ -18,18 +18,13 @@ import java.util.concurrent.TimeUnit
 class OkHttpManager {
     private val mHandler = Handler(Looper.getMainLooper())
 
-    private val client: OkHttpClient
+    private val client: OkHttpClient = OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).build()
 
     interface OnCallback {
         fun onError(e: IOException)
 
         fun onSuccess(response: Response)
-    }
-
-    init {
-        // 初始化Okhttp
-        client = OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).build()
     }
 
     operator fun get(url: String, params: Map<String, String>?, onCallback: OnCallback) {

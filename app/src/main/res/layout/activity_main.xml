@@ -6,7 +6,7 @@
         android:layout_width="match_parent" android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-    <com.rocky.mediaplaysurface.surfaceview.SurfaceViewLayout
+    <com.rocky.mediaplaysurface.surfaceview.EasyVideo
             android:id="@+id/video"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"
@@ -22,18 +22,18 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_height="wrap_content"/>
     <!--<com.zlm.hp.lyrics.widget.ManyLyricsView-->
-            <!--android:id="@+id/lrc"-->
-            <!--app:layout_constraintTop_toBottomOf="@id/video"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"/>-->
+    <!--android:id="@+id/lrc"-->
+    <!--app:layout_constraintTop_toBottomOf="@id/video"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"/>-->
     <Button
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:text="第五人格"
-            android:visibility="gone"
             android:layout_height="wrap_content"
             android:onClick="click"
     />

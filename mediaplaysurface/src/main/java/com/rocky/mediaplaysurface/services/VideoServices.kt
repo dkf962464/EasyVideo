@@ -96,6 +96,7 @@ class VideoServices : Service() {
             player.stop()
             player.release()
             player= MediaPlayer()
+            player.reset()
             return player
         }
         fun play() {

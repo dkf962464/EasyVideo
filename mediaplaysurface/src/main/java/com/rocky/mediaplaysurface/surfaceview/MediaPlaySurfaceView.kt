@@ -17,10 +17,9 @@ import android.view.SurfaceView
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
-import android.widget.Toast
 import com.rocky.mediaplaysurface.services.VideoServices
 import com.rocky.mediaplaysurface.util.BaseUtil
-import java.text.BreakIterator
+import kotlin.math.abs
 import kotlin.math.max
 
 /**
@@ -38,6 +37,7 @@ class MediaPlaySurfaceView : SurfaceView {
     private var binder: VideoServices.VideoBinder? = null
     //播放视频
     private var VIDEO: Int = 0
+
     private var CURRENT_TIME = 1
     private var mHandler: Handler
     private var playerUrl: String? = null
@@ -63,6 +63,7 @@ class MediaPlaySurfaceView : SurfaceView {
     //xml
     constructor(context: Context?, attr: AttributeSet?) : super(context, attr) {
         //在设置属性的时候进行判断，是否为空
+
     }
 
     init {
@@ -83,7 +84,7 @@ class MediaPlaySurfaceView : SurfaceView {
         )
 //        }
         mHandler = initHandler()
-        addCallBack()
+
         setOnTouchListener { v, event ->
             currentProgress = getBinder().getCurrenPostion()
             when (event.action) {
@@ -91,15 +92,15 @@ class MediaPlaySurfaceView : SurfaceView {
                     Log.e("actionEvent", "ACTION_MOVE")
                     moveX = event.rawX
                     moveY = event.rawY
-                    if ( Math.abs(moveY!! - downY!!)> 20f) {
+                    if (abs(moveY!! - downY!!) > 20f) {
                         if (moveX!! > upMoveX!!) {
                             upMoveX = moveX
                             currentProgress = currentProgress!!.plus(300)
                             Log.e("currentProgress", "++++++" + currentProgress!!)
                         } else {
                             upMoveX = moveX
-                            currentProgress = currentProgress!! -300
-                           Log.e("currentProgress", "-------" + currentProgress!!)
+                            currentProgress = currentProgress!! - 300
+                            Log.e("currentProgress", "-------" + currentProgress!!)
                         }
                     }
                 }
@@ -187,9 +188,9 @@ class MediaPlaySurfaceView : SurfaceView {
 
     private fun startVideo() {
         if (null != binder) {
+            addCallBack()
             mHandler.removeMessages(VIDEO)
             player = binder!!.getPlayer()
-            player!!.reset()
             if (playerUrl!!.contains("http")) {
                 player!!.setDataSource(playerUrl)
             } else {
@@ -197,11 +198,11 @@ class MediaPlaySurfaceView : SurfaceView {
             }
             player!!.prepareAsync()
             player!!.setOnPreparedListener {
-                player!!.start()
-                player!!.setDisplay(holder)
                 allTime!!.text = BaseUtil.millToMin(binder!!.getDuration())
                 videoAllTime = binder!!.getDuration()
                 seekBar!!.max = videoAllTime!!
+                player!!.setDisplay(holder)
+                player!!.start()
                 mHandler.sendEmptyMessage(CURRENT_TIME)
             }
             player!!.setOnCompletionListener {
@@ -241,13 +242,11 @@ class MediaPlaySurfaceView : SurfaceView {
             override fun surfaceDestroyed(holder: SurfaceHolder?) {
                 if (null != binder) {
                     binder!!.pause()
-                    Log.e("init", "surfaceDestroyed")
                 }
             }
 
             override fun surfaceCreated(holder: SurfaceHolder?) {
                 if (null != binder) {
-                    Log.e("init", "surfaceCreated")
                     binder!!.setDisplay(holder!!)
                     binder!!.play()
                 }

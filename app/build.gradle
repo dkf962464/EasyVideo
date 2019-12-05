@@ -1,9 +1,6 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -17,7 +14,6 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -38,6 +34,5 @@ dependencies {
     implementation('com.squareup.retrofit2:converter-gson:2.4.0') {
         exclude group: 'com.google.code.gson'
     }
-
-
+    implementation 'com.github.princekin-f:EasyFloat:1.1.3'
 }

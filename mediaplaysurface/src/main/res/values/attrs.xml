@@ -13,7 +13,7 @@
         <attr name="font_size" format="dimension" />
         <attr name="draw_color" format="color" />
     </declare-styleable>
-    <declare-styleable name="SurfaceViewLayout">
+    <declare-styleable name="EasyVideo">
         <attr name="progressDrawable" format="reference" />
         <attr name="thumb" format="reference" />
         <attr name="fullScreen" format="reference" />
