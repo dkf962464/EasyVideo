@@ -12,7 +12,7 @@
 #}
 # -keep class com.rocky.mediaplaysurface.surfaceview.EasyVideoublic void loadVideo();
 # }
-#  -keep class com.rocky.mediaplaysurface.surfaceview.MediaPlaySurfaceView{
+#  -keep class com.media.kvideo.surfaceview.MediaPlaySurfaceView{
 #      public void playVideo();
 #          public void resolveSize();
 #  }

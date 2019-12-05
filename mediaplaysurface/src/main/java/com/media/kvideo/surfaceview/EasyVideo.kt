@@ -1,4 +1,4 @@
-package com.rocky.mediaplaysurface.surfaceview
+package com.media.kvideo.surfaceview
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -19,8 +19,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
-import com.rocky.mediaplaysurface.R
-import com.rocky.mediaplaysurface.util.BaseUtil
+import com.media.kvideo.R
+import com.media.kvideo.surfaceview.MediaPlaySurfaceView
+import com.media.kvideo.util.BaseUtil
 
 /**
  * create by 2019/10/29

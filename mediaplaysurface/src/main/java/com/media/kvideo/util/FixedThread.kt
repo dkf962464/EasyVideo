@@ -1,7 +1,7 @@
-package com.rocky.mediaplaysurface.util
+package com.media.kvideo.util
 
 import android.util.Log
-import com.rocky.mediaplaysurface.interce.FixedThreadInterface
+import com.media.kvideo.interce.FixedThreadInterface
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

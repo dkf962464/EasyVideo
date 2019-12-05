@@ -3,7 +3,7 @@
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content">
-    <com.rocky.mediaplaysurface.surfaceview.EasyVideo
+    <com.media.kvideo.surfaceview.EasyVideo
             android:id="@+id/sur"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"

@@ -6,7 +6,7 @@
         android:layout_width="match_parent" android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-    <com.rocky.mediaplaysurface.surfaceview.EasyVideo
+    <com.media.kvideo.surfaceview.EasyVideo
             android:id="@+id/video"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"

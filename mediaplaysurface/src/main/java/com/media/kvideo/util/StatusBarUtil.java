@@ -1,4 +1,4 @@
-package com.rocky.mediaplaysurface.util;
+package com.media.kvideo.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

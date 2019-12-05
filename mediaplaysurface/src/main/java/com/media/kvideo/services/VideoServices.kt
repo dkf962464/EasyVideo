@@ -1,4 +1,4 @@
-package com.rocky.mediaplaysurface.services
+package com.media.kvideo.services
 import android.app.Service
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
@@ -12,9 +12,9 @@ import android.util.Log
 import android.view.SurfaceHolder
 import android.widget.ImageView
 import android.widget.TextView
-import com.rocky.mediaplaysurface.interce.FixedThreadInterface
-import com.rocky.mediaplaysurface.util.BaseUtil
-import com.rocky.mediaplaysurface.util.FixedThread
+import com.media.kvideo.interce.FixedThreadInterface
+import com.media.kvideo.util.BaseUtil
+import com.media.kvideo.util.FixedThread
 import java.util.HashMap
 
 class VideoServices : Service() {

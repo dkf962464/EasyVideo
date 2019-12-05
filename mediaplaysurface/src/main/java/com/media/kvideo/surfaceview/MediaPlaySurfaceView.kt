@@ -1,4 +1,4 @@
-package com.rocky.mediaplaysurface.surfaceview
+package com.media.kvideo.surfaceview
 
 import android.content.ComponentName
 import android.content.Context
@@ -17,8 +17,8 @@ import android.view.SurfaceView
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
-import com.rocky.mediaplaysurface.services.VideoServices
-import com.rocky.mediaplaysurface.util.BaseUtil
+import com.media.kvideo.services.VideoServices
+import com.media.kvideo.util.BaseUtil
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -67,7 +67,7 @@ class MediaPlaySurfaceView : SurfaceView {
     }
 
     init {
-//        if (!BaseUtil.isServiceRunning(context, "com.rocky.mediaplaysurface.services.VideoServices")) {
+//        if (!BaseUtil.isServiceRunning(context, "com.media.kvideo.services.VideoServices")) {
         connection = object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
             }
