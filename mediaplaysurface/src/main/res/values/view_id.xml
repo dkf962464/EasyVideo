@@ -2,4 +2,5 @@
 <resources>
     <item name="medially_view_id" type="id"/>
     <item name="default_video_id" type="id"/>
+    <item name="rd_id" type="id"/>
 </resources>

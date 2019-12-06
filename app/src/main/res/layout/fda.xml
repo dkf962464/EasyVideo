@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -10,17 +10,7 @@
     <com.media.kvideo.surfaceview.EasyVideo
             android:id="@+id/video"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:bottomBackgroundColor="@color/black"
-            app:endTimeColor="@android:color/white"
-            app:exitFullScreen="@drawable/exit_full"
-            app:fullScreen="@drawable/full"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:playPauseIcon="@drawable/play_pause_selecter"
-            app:progressDrawable="@drawable/seekbar_style"
-            app:startTimeColor="@android:color/white"
-            app:thumb="@drawable/seekbar_thume"/>
+            android:layout_height="wrap_content"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import com.google.gson.Gson
+import com.media.kvideo.surfaceview.EasyVideo
 import com.media.kvideo.util.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.Response
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         StatusBarUtil.immersive(this, Color.TRANSPARENT, 0.5f)
         setContentView(R.layout.activity_main)
         requestMv()
+        video!!.loadVideo("http://fs.mv.web.kugou.com/201912061024/bc56643600ab41020db8c39367258664/G168/M04/03/03/SIcBAF0S2l6AcudBBje74CZFDcI800.mp4")
 //        val string: File =Environment.getExternalStorageDirectory()
 //        val list =  string.listFiles()
 //        Log.e("FileName","$"+list.size)
@@ -41,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         video!!.destroyMedially()
+        //如果只有声音没有图像的话，调用此方法即可
+        video.invalidateVideo()
     }
 
     private fun settingAlph() {
@@ -54,15 +58,16 @@ class MainActivity : AppCompatActivity() {
             }
             ofInt.interpolator = LinearInterpolator()
             ofInt.start()
-
         }
     }
-//http://fs.mv.web.kugou.com/201912061024/bc56643600ab41020db8c39367258664/G168/M04/03/03/SIcBAF0S2l6AcudBBje74CZFDcI800.mp4
+
+    //http://fs.mv.web.kugou.com/201912061024/bc56643600ab41020db8c39367258664/G168/M04/03/03/SIcBAF0S2l6AcudBBje74CZFDcI800.mp4
     private fun requestMv() {
         OkHttpManager.instances["http://m.kugou.com/app/i/mv.php?cmd=100&hash=cec895f084995e79068dc1a040d7dc58&ismp3=1&ext=mp4", null, object :
             OkHttpManager.OnCallback {
             override fun onError(e: IOException) {
             }
+
             override fun onSuccess(response: Response) {
                 if (response.code() == 200) {
                     try {
@@ -81,4 +86,5 @@ class MainActivity : AppCompatActivity() {
             }
         }]
     }
+
 }

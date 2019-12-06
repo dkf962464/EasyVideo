@@ -2,18 +2,23 @@ package com.media.kvideo.util
 
 import android.annotation.TargetApi
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Build
-import androidx.annotation.RequiresApi
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import com.media.kvideo.R
 
 
 /**
@@ -28,10 +33,10 @@ object BaseUtil {
         val minutes = (mill % (1000 * 60 * 60) / (1000 * 60)).toLong()
         val seconds = (mill % (1000 * 60) / 1000).toLong()
         val diffTime: String
-        if (seconds < 10) {
-            diffTime = "$minutes:0$seconds"
+        diffTime =if (seconds < 10) {
+            "$minutes:0$seconds"
         } else {
-            diffTime = "$minutes:$seconds"
+            "$minutes:$seconds"
         }
         return diffTime
     }
@@ -72,10 +77,8 @@ object BaseUtil {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     fun showStatusBar(activity: Activity) {
         val decorView = activity.window.decorView
-        //让应用主题内容占用系统状态栏的空间,注意:下面两个参数必须一起使用 stable 牢固的
         val option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         decorView.systemUiVisibility = option
-        //设置状态栏颜色为透明
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.window.statusBarColor = Color.TRANSPARENT
         }
@@ -92,5 +95,30 @@ object BaseUtil {
 
     fun setDrawable(context: Context?,imageView: ImageView?,drawable:Int){
         imageView!!.setImageDrawable(ContextCompat.getDrawable(context!!, drawable))
+    }
+
+    fun setTextColor(textView: TextView, string: String, firstColor: Int, secondColor: Int, endPosition: Int) {
+        val spannableString = SpannableString(string)
+        //设置颜色
+        spannableString.setSpan(ForegroundColorSpan(secondColor), 0, endPosition, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        //设置字体大小，true表示前面的字体大小20单位为dip
+        spannableString.setSpan(AbsoluteSizeSpan(20, true), 0, endPosition, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(
+            AbsoluteSizeSpan(20, true),
+            endPosition,
+            string.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        //设置字体，BOLD为粗体
+        spannableString.setSpan(
+            ForegroundColorSpan(firstColor),
+            endPosition,
+            string.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        spannableString.setSpan(StyleSpan(Typeface.BOLD), 0, endPosition, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(StyleSpan(Typeface.BOLD), endPosition, string.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        textView.text = spannableString
     }
 }

@@ -1,5 +1,4 @@
 package com.media.kvideo.surfaceview
-
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -39,13 +38,13 @@ class EasyVideo : ConstraintLayout {
     var playPauseIcon: Drawable? = null
     var startTimeColor: Int = 0
     var endTimeColor: Int = 0
-    var defaultColor:Int=Color.WHITE
     //一定要设置此view的透明度为0.5f
     var bottomBackgroundColor: Int = 0
     var seekBarHeight: Float? = 1f
     private var inflater: LayoutInflater? = null
-    private var currentTime: TextView? = null
+    private var reduceAdd: TextView? = null
     private var allTime: TextView? = null
+    private var currentTime:TextView?=null
     private var playPause: ImageView? = null
     private var fullScreenView: ImageView? = null
     private var seekBar: SeekBar? = null
@@ -56,14 +55,14 @@ class EasyVideo : ConstraintLayout {
     private var UPDATE_PLAY_ICON: Int = 0
     private var UPDATE_PAUSE_ICON: Int = 1
     private var params: LayoutParams? = null
+    private var current: LayoutParams? = null
+
     private var surfaceViewParams: LayoutParams? = null
     private var pg: Int = 0
 
     constructor(context: Context?) : super(context) {
         Log.e("aaa666", "constructor")
     }
-
-
     constructor(context: Context?, attr: AttributeSet?) : super(context, attr) {
         context!!
         val typedArray = context.obtainStyledAttributes(attr, R.styleable.EasyVideo)
@@ -77,7 +76,6 @@ class EasyVideo : ConstraintLayout {
         bottomBackgroundColor = typedArray.getColor(R.styleable.EasyVideo_bottomBackgroundColor, Color.BLACK)
         seekBarHeight = typedArray.getDimension(R.styleable.EasyVideo_seekBarHeight, 1f)
         typedArray.recycle()
-
     }
 
     //横竖屏切换
@@ -169,7 +167,6 @@ class EasyVideo : ConstraintLayout {
                     fullScreenView!!.setImageDrawable(exitFullScreen)
                 }
             }
-
             fullScreenView!!.setOnClickListener {
                 if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                     value.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
@@ -185,8 +182,6 @@ class EasyVideo : ConstraintLayout {
             if (null==progressDrawable){
                 seekBar!!.progressDrawable = ContextCompat.getDrawable(context,R.drawable.seekbar_style)
             }else  seekBar!!.progressDrawable = progressDrawable
-
-
             if (null==thumb){
                 seekBar!!.thumb = ContextCompat.getDrawable(context,R.drawable.seekbar_thume)
             }else
@@ -197,13 +192,22 @@ class EasyVideo : ConstraintLayout {
             params!!.bottomToBottom = R.id.medially_view_id
             view!!.layoutParams = params
             addView(view)
+
+            reduceAdd=TextView(context)
+            reduceAdd!!.id=R.id.rd_id
+            current=LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)
+            current!!.leftToLeft=R.id.medially_view_id
+            current!!.rightToRight=R.id.medially_view_id
+            current!!.topToTop=R.id.medially_view_id
+            current!!.topMargin=BaseUtil.dp2px(context,20f)
+            reduceAdd!!.layoutParams=current
+            addView(reduceAdd)
         }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         initData()
-        Log.e("merege","aaa")
         val resolveWidth = mediaPlaySurfaceView!!.resolveSize(measuredWidth, widthMeasureSpec, 0)
         val resolveHeight = mediaPlaySurfaceView!!.resolveSize(measuredHeight, heightMeasureSpec, 1)
         setMeasuredDimension(resolveWidth!!, resolveHeight!!)
@@ -236,7 +240,11 @@ class EasyVideo : ConstraintLayout {
     fun destroyMedially() {
         if (null != mediaPlaySurfaceView) mediaPlaySurfaceView!!.destory()
     }
-
+    fun invalidateVideo(){
+        if (null!=mediaPlaySurfaceView){
+            mediaPlaySurfaceView!!.invalidateVideo()
+        }
+    }
 
     private fun initHandler(): Handler {
         return Handler(Looper.getMainLooper()) {
