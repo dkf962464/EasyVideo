@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
 import android.view.KeyEvent
@@ -19,8 +18,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.media.kvideo.R
-import com.media.kvideo.surfaceview.MediaPlaySurfaceView
 import com.media.kvideo.util.BaseUtil
 
 /**
@@ -37,10 +37,11 @@ class EasyVideo : ConstraintLayout {
     var fullScreen: Drawable? = null
     var exitFullScreen: Drawable? = null
     var playPauseIcon: Drawable? = null
-    var startTimeColor: Int? = 0
-    var endTimeColor: Int? = 0
+    var startTimeColor: Int = 0
+    var endTimeColor: Int = 0
+    var defaultColor:Int=Color.WHITE
     //一定要设置此view的透明度为0.5f
-    var bottomBackgroundColor: Int? = 0
+    var bottomBackgroundColor: Int = 0
     var seekBarHeight: Float? = 1f
     private var inflater: LayoutInflater? = null
     private var currentTime: TextView? = null
@@ -89,7 +90,6 @@ class EasyVideo : ConstraintLayout {
         val playPauseParams: LayoutParams = playPause!!.layoutParams as LayoutParams
         val fullScreenViewParams: LayoutParams = fullScreenView!!.layoutParams as LayoutParams
         if (newConfig!!.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
             setWeight(currentParams, currentTime, 0.1f)
             setWeight(allTimeParams, allTime, 0.1f)
             setWeight(playPauseParams, playPause, 0.15f)
@@ -152,13 +152,24 @@ class EasyVideo : ConstraintLayout {
         if (childCount<=0){
             BaseUtil.clearAnim(context) //清除横竖屏切换的动画，避免卡顿
             val value: Activity = context as Activity
-            currentTime!!.setTextColor(startTimeColor!!)
-            allTime!!.setTextColor(endTimeColor!!)
-            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                fullScreenView!!.setImageDrawable(fullScreen)
-            } else {
-                fullScreenView!!.setImageDrawable(exitFullScreen)
+            currentTime!!.setTextColor(startTimeColor)
+            allTime!!.setTextColor(endTimeColor)
+            rootView!!.setBackgroundColor(bottomBackgroundColor)
+
+            if (null==fullScreen||null==exitFullScreen){
+                if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    BaseUtil.setDrawable(context,fullScreenView,R.drawable.full)
+                } else {
+                    BaseUtil.setDrawable(context,fullScreenView,R.drawable.exit_full)
+                }
+            }else{
+                if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    fullScreenView!!.setImageDrawable(fullScreen)
+                } else {
+                    fullScreenView!!.setImageDrawable(exitFullScreen)
+                }
             }
+
             fullScreenView!!.setOnClickListener {
                 if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                     value.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
@@ -166,9 +177,19 @@ class EasyVideo : ConstraintLayout {
                     value.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                 }
             }
-            playPause!!.setImageDrawable(playPauseIcon)
-            seekBar!!.progressDrawable = progressDrawable
-            rootView!!.setBackgroundColor(bottomBackgroundColor!!)
+            if (null==playPauseIcon){
+                BaseUtil.setDrawable(context,playPause,R.drawable.play_pause_selecter)
+            }else{
+                playPause!!.setImageDrawable(playPauseIcon)
+            }
+            if (null==progressDrawable){
+                seekBar!!.progressDrawable = ContextCompat.getDrawable(context,R.drawable.seekbar_style)
+            }else  seekBar!!.progressDrawable = progressDrawable
+
+
+            if (null==thumb){
+                seekBar!!.thumb = ContextCompat.getDrawable(context,R.drawable.seekbar_thume)
+            }else
             seekBar!!.thumb = thumb
             removeAllViews()
             addView(mediaPlaySurfaceView)
@@ -269,4 +290,5 @@ class EasyVideo : ConstraintLayout {
         decorView.isFocusableInTouchMode = true
         decorView.requestFocus()
     }
+
 }

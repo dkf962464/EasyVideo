@@ -6,11 +6,14 @@ import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ImageView
+import androidx.core.content.ContextCompat
+import com.media.kvideo.R
 
 
 /**
@@ -85,5 +88,9 @@ object BaseUtil {
         val f = decorView.layoutParams as WindowManager.LayoutParams
         f.rotationAnimation = WindowManager.LayoutParams.ROTATION_ANIMATION_SEAMLESS
         windowManager.updateViewLayout(decorView, f)
+    }
+
+    fun setDrawable(context: Context?,imageView: ImageView?,drawable:Int){
+        imageView!!.setImageDrawable(ContextCompat.getDrawable(context!!, drawable))
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,14 +10,6 @@
             android:id="@+id/video"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"
-            app:startTimeColor="@android:color/white"
-            app:endTimeColor="@android:color/white"
-            app:fullScreen="@drawable/full"
-            app:thumb="@drawable/seekbar_thume"
-            app:playPauseIcon="@drawable/play_pause_selecter"
-            app:progressDrawable="@drawable/seekbar_style"
-            app:exitFullScreen="@drawable/exit_full"
-            app:bottomBackgroundColor="@color/black"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_height="wrap_content"/>
@@ -37,4 +29,4 @@
             android:layout_height="wrap_content"
             android:onClick="click"
     />
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

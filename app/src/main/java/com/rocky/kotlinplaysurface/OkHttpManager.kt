@@ -2,9 +2,10 @@ package com.rocky.kotlinplaysurface
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import okhttp3.*
-import java.io.File
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
@@ -17,7 +18,6 @@ import java.util.concurrent.TimeUnit
 
 class OkHttpManager {
     private val mHandler = Handler(Looper.getMainLooper())
-
     private val client: OkHttpClient = OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS)
         .writeTimeout(20, TimeUnit.SECONDS).readTimeout(20, TimeUnit.SECONDS).build()
 
@@ -70,66 +70,6 @@ class OkHttpManager {
         })
     }
 
-
-
-
-    fun post(url: String, params: Map<String, String>?, onCallback: OnCallback) {
-        // 构建 builder 对象  主要用于添加参数
-        val stringBuilder = StringBuilder()
-        val builder = FormBody.Builder()
-        if (params != null && params.size > 0) {
-            for ((key, value) in params) {
-                try {
-                    builder.add(key, URLEncoder.encode(value, "utf-8"))
-                    stringBuilder.append("&" + key + "=" + URLEncoder.encode(value))
-                } catch (e: UnsupportedEncodingException) {
-                    e.printStackTrace()
-                }
-
-            }
-        }
-
-        // 构建 body 对象
-        val body = builder.build()
-        // 构建请求对象
-        val request = Request.Builder().post(body).url(url).build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                mHandler.post { onCallback.onError(e) }
-            }
-
-            override fun onResponse(call: okhttp3.Call, response: Response) {
-
-                mHandler.post { onCallback.onSuccess(response) }
-            }
-        })
-    }
-
-    private fun uploadMultiFile(uploadUrl: String, file: File, name: String, fileName: String) {
-        val url = "upload url"
-        //        File file = new File("fileDir", "test.jpg");
-        val fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file)
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart(name, fileName, fileBody)
-            .build()
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                Log.e(TAG, "uploadMultiFile() e=$e")
-            }
-
-
-            @Throws(IOException::class)
-            override fun onResponse(call: okhttp3.Call, response: Response) {
-                Log.i(TAG, "uploadMultiFile() response=" + response.body()!!.string())
-                response.body()!!.byteStream()
-            }
-        })
-    }
 
     companion object {
         private val TAG = "OkHttpUtils"

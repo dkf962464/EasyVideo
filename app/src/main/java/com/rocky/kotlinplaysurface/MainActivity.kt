@@ -3,7 +3,7 @@ package com.rocky.kotlinplaysurface
 import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -28,8 +28,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun click(v: View) {
-        val url = "android.resource://$packageName/raw/" + R.raw.zhangdechouhuodejiu
-        video!!.loadVideo(url)
 //        Log.e("lrcPath",File(Environment.getExternalStorageDirectory().absolutePath+"/at","oh.krc").absolutePath)
 //        v.visibility=View.GONE
 //        Toast.makeText(this,"开始播放第五人格,爱你呦",Toast.LENGTH_LONG).show()
@@ -59,13 +57,12 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
+//http://fs.mv.web.kugou.com/201912061024/bc56643600ab41020db8c39367258664/G168/M04/03/03/SIcBAF0S2l6AcudBBje74CZFDcI800.mp4
     private fun requestMv() {
         OkHttpManager.instances["http://m.kugou.com/app/i/mv.php?cmd=100&hash=cec895f084995e79068dc1a040d7dc58&ismp3=1&ext=mp4", null, object :
             OkHttpManager.OnCallback {
             override fun onError(e: IOException) {
             }
-
             override fun onSuccess(response: Response) {
                 if (response.code() == 200) {
                     try {
