@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import com.google.gson.Gson
-import com.media.kvideo.surfaceview.EasyVideo
 import com.media.kvideo.util.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.Response
@@ -32,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     fun click(v: View) {
 //        Log.e("lrcPath",File(Environment.getExternalStorageDirectory().absolutePath+"/at","oh.krc").absolutePath)
 //        v.visibility=View.GONE
-//        Toast.makeText(this,"开始播放第五人格,爱你呦",Toast.LENGTH_LONG).show()
 //        val reader = LyricsReader()
 //        reader.loadLrc()
 //        lrc.lyricsReader= reader
@@ -44,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         video!!.destroyMedially()
         //如果只有声音没有图像的话，调用此方法即可
-        video.invalidateVideo()
+//        video.invalidateVideo()
     }
 
     private fun settingAlph() {
@@ -76,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                         val gson = Gson()
                         val mvBean = gson.fromJson(mvJson, MvBean::class.java)
                         val playUrl = mvBean.mvdata!!.rq!!.downurl
-                        Log.e("playurl", "mvUrl\t$playUrl")
+                        Log.e("playUrl", "mvUrl\t$playUrl")
                         video!!.loadVideo(playUrl!!)
 //                        settingAlph()
                     } catch (e: Exception) {

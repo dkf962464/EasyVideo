@@ -1,4 +1,5 @@
 package com.media.kvideo.surfaceview
+
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -15,6 +16,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -29,6 +31,7 @@ import com.media.kvideo.util.BaseUtil
  *
  * Believe in yourself, you can do it.
  */
+
 class EasyVideo : ConstraintLayout {
     //java new
     var progressDrawable: Drawable? = null
@@ -44,7 +47,7 @@ class EasyVideo : ConstraintLayout {
     private var inflater: LayoutInflater? = null
     private var reduceAdd: TextView? = null
     private var allTime: TextView? = null
-    private var currentTime:TextView?=null
+    private var currentTime: TextView? = null
     private var playPause: ImageView? = null
     private var fullScreenView: ImageView? = null
     private var seekBar: SeekBar? = null
@@ -56,13 +59,15 @@ class EasyVideo : ConstraintLayout {
     private var UPDATE_PAUSE_ICON: Int = 1
     private var params: LayoutParams? = null
     private var current: LayoutParams? = null
-
+    private var progressbarLayout: LayoutParams? = null
+    private var loading: ProgressBar? = null
     private var surfaceViewParams: LayoutParams? = null
     private var pg: Int = 0
 
     constructor(context: Context?) : super(context) {
         Log.e("aaa666", "constructor")
     }
+
     constructor(context: Context?, attr: AttributeSet?) : super(context, attr) {
         context!!
         val typedArray = context.obtainStyledAttributes(attr, R.styleable.EasyVideo)
@@ -131,7 +136,7 @@ class EasyVideo : ConstraintLayout {
         surfaceViewParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         mediaPlaySurfaceView!!.layoutParams = surfaceViewParams
         playPause!!.setOnClickListener {
-            if (mediaPlaySurfaceView!!.getBinder().isPlaying()) {
+            if (mediaPlaySurfaceView!!.isPlaying()) {
                 pauseVideo()
                 Log.e("video'sRun", "pauseVideo")
             } else {
@@ -139,34 +144,22 @@ class EasyVideo : ConstraintLayout {
                 Log.e("video'sRun", "playVideo")
             }
         }
-
         settingSeekBarSlideTouch(seekBar)
         isFocusableInTouchMode = true
 
     }
 
     private fun initData() {
+        //因为横竖屏的时候需要重绘全屏按钮，所以把这个方法暴露子外以用来更新
+        settingPlayIcon()
         //防止多次重绘，横竖屏切换会黑屏的问题
-        if (childCount<=0){
+        if (childCount <= 0) {
             BaseUtil.clearAnim(context) //清除横竖屏切换的动画，避免卡顿
             val value: Activity = context as Activity
             currentTime!!.setTextColor(startTimeColor)
             allTime!!.setTextColor(endTimeColor)
             rootView!!.setBackgroundColor(bottomBackgroundColor)
 
-            if (null==fullScreen||null==exitFullScreen){
-                if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    BaseUtil.setDrawable(context,fullScreenView,R.drawable.full)
-                } else {
-                    BaseUtil.setDrawable(context,fullScreenView,R.drawable.exit_full)
-                }
-            }else{
-                if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    fullScreenView!!.setImageDrawable(fullScreen)
-                } else {
-                    fullScreenView!!.setImageDrawable(exitFullScreen)
-                }
-            }
             fullScreenView!!.setOnClickListener {
                 if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                     value.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
@@ -174,18 +167,18 @@ class EasyVideo : ConstraintLayout {
                     value.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                 }
             }
-            if (null==playPauseIcon){
-                BaseUtil.setDrawable(context,playPause,R.drawable.play_pause_selecter)
-            }else{
+            if (null == playPauseIcon) {
+                BaseUtil.setDrawable(context, playPause, R.drawable.play_pause_selecter)
+            } else {
                 playPause!!.setImageDrawable(playPauseIcon)
             }
-            if (null==progressDrawable){
-                seekBar!!.progressDrawable = ContextCompat.getDrawable(context,R.drawable.seekbar_style)
-            }else  seekBar!!.progressDrawable = progressDrawable
-            if (null==thumb){
-                seekBar!!.thumb = ContextCompat.getDrawable(context,R.drawable.seekbar_thume)
-            }else
-            seekBar!!.thumb = thumb
+            if (null == progressDrawable) {
+                seekBar!!.progressDrawable = ContextCompat.getDrawable(context, R.drawable.seekbar_style)
+            } else seekBar!!.progressDrawable = progressDrawable
+            if (null == thumb) {
+                seekBar!!.thumb = ContextCompat.getDrawable(context, R.drawable.seekbar_thume)
+            } else
+                seekBar!!.thumb = thumb
             removeAllViews()
             addView(mediaPlaySurfaceView)
             params = view!!.layoutParams as LayoutParams
@@ -193,15 +186,25 @@ class EasyVideo : ConstraintLayout {
             view!!.layoutParams = params
             addView(view)
 
-            reduceAdd=TextView(context)
-            reduceAdd!!.id=R.id.rd_id
-            current=LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)
-            current!!.leftToLeft=R.id.medially_view_id
-            current!!.rightToRight=R.id.medially_view_id
-            current!!.topToTop=R.id.medially_view_id
-            current!!.topMargin=BaseUtil.dp2px(context,20f)
-            reduceAdd!!.layoutParams=current
+            reduceAdd = TextView(context)
+            reduceAdd!!.id = R.id.rd_id
+            current = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            current!!.leftToLeft = R.id.medially_view_id
+            current!!.rightToRight = R.id.medially_view_id
+            current!!.topToTop = R.id.medially_view_id
+            current!!.topMargin = BaseUtil.dp2px(context, 20f)
+            reduceAdd!!.layoutParams = current
             addView(reduceAdd)
+            loading= ProgressBar(context)
+            progressbarLayout = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            progressbarLayout!!.leftToLeft = R.id.medially_view_id
+            progressbarLayout!!.rightToRight = R.id.medially_view_id
+            progressbarLayout!!.topToTop = R.id.medially_view_id
+            progressbarLayout!!.bottomToBottom = R.id.medially_view_id
+            loading!!.indeterminateDrawable = ContextCompat.getDrawable(context, R.drawable.loading_rote_anim)
+            loading!!.layoutParams = progressbarLayout
+            loading!!.visibility= View.GONE
+            addView(loading)
         }
     }
 
@@ -216,18 +219,18 @@ class EasyVideo : ConstraintLayout {
     fun loadVideo(playUrl: String) {
         if (null != mediaPlaySurfaceView) {
             mHandler.sendEmptyMessage(UPDATE_PLAY_ICON)
-            mediaPlaySurfaceView!!.playVideo(playUrl, currentTime, allTime, seekBar)
+            mediaPlaySurfaceView!!.playVideo(playUrl, currentTime, allTime, seekBar,loading)
         }
     }
 
     private fun playVideo() {
-        mediaPlaySurfaceView!!.getBinder().play()
+        mediaPlaySurfaceView!!.play()
         mediaPlaySurfaceView!!.updateProgress()
         mHandler.sendEmptyMessage(UPDATE_PLAY_ICON)
     }
 
     private fun pauseVideo() {
-        mediaPlaySurfaceView!!.getBinder().pause()
+        mediaPlaySurfaceView!!.pause()
         mHandler.sendEmptyMessage(UPDATE_PAUSE_ICON)
 
     }
@@ -238,10 +241,12 @@ class EasyVideo : ConstraintLayout {
     }
 
     fun destroyMedially() {
-        if (null != mediaPlaySurfaceView) mediaPlaySurfaceView!!.destory()
+        if (null != mediaPlaySurfaceView) mediaPlaySurfaceView!!.destroy()
     }
-    fun invalidateVideo(){
-        if (null!=mediaPlaySurfaceView){
+
+    @SuppressWarnings("WeakerAccess, unused,unchecked,all")
+    fun invalidateVideo() {
+        if (null != mediaPlaySurfaceView) {
             mediaPlaySurfaceView!!.invalidateVideo()
         }
     }
@@ -275,7 +280,11 @@ class EasyVideo : ConstraintLayout {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 seekBar!!.progress = pg
-                mediaPlaySurfaceView!!.getBinder().seekTo(pg)
+                mediaPlaySurfaceView!!.seekTo(pg)
+                mediaPlaySurfaceView!!.play()
+                if (null != mediaPlaySurfaceView) {
+                    mediaPlaySurfaceView!!.updateProgress()
+                }
             }
         })
     }
@@ -299,4 +308,19 @@ class EasyVideo : ConstraintLayout {
         decorView.requestFocus()
     }
 
+    private fun settingPlayIcon() {
+        if (null == fullScreen || null == exitFullScreen) {
+            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                BaseUtil.setDrawable(context, fullScreenView, R.drawable.full)
+            } else {
+                BaseUtil.setDrawable(context, fullScreenView, R.drawable.exit_full)
+            }
+        } else {
+            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                fullScreenView!!.setImageDrawable(fullScreen)
+            } else {
+                fullScreenView!!.setImageDrawable(exitFullScreen)
+            }
+        }
+    }
 }

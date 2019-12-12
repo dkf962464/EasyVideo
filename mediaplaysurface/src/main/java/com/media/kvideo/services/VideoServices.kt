@@ -80,7 +80,6 @@ class VideoServices : Service() {
                         mmr.release()
                     }
                 }
-
             })
         }
 
@@ -143,7 +142,6 @@ class VideoServices : Service() {
             } catch (e: Exception) {
                 e.message
             }
-
         }
     }
 }
