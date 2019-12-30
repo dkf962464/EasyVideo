@@ -15,10 +15,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.SeekBar
-import android.widget.TextView
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.media.kvideo.R
@@ -41,9 +38,14 @@ class EasyVideo : ConstraintLayout {
     var playPauseIcon: Drawable? = null
     var startTimeColor: Int = 0
     var endTimeColor: Int = 0
+    var autoPlay:Int =1
+
+    var isShowSeekbar:Boolean=true
+    var playUrl:String?=null
     //一定要设置此view的透明度为0.5f
     var bottomBackgroundColor: Int = 0
     var seekBarHeight: Float? = 1f
+    var jvavIsplay:Boolean=false
     private var inflater: LayoutInflater? = null
     private var reduceAdd: TextView? = null
     private var allTime: TextView? = null
@@ -57,6 +59,7 @@ class EasyVideo : ConstraintLayout {
     private var mHandler: Handler
     private var UPDATE_PLAY_ICON: Int = 0
     private var UPDATE_PAUSE_ICON: Int = 1
+    private var PLAY_URL:Int=3
     private var params: LayoutParams? = null
     private var current: LayoutParams? = null
     private var progressbarLayout: LayoutParams? = null
@@ -64,6 +67,10 @@ class EasyVideo : ConstraintLayout {
     private var surfaceViewParams: LayoutParams? = null
     private var pg: Int = 0
 
+    companion object{
+         var ISTOUNCHUP:Boolean=true
+        var isTounch:Boolean=true
+    }
     constructor(context: Context?) : super(context) {
         Log.e("aaa666", "constructor")
     }
@@ -80,6 +87,10 @@ class EasyVideo : ConstraintLayout {
         endTimeColor = typedArray.getColor(R.styleable.EasyVideo_endTimeColor, Color.WHITE)
         bottomBackgroundColor = typedArray.getColor(R.styleable.EasyVideo_bottomBackgroundColor, Color.BLACK)
         seekBarHeight = typedArray.getDimension(R.styleable.EasyVideo_seekBarHeight, 1f)
+        autoPlay=typedArray.getInt(R.styleable.EasyVideo_isAutoPlay,1)
+        isTounch=typedArray.getBoolean(R.styleable.EasyVideo_isTounch,true)
+        isShowSeekbar=typedArray.getBoolean(R.styleable.EasyVideo_isShowSeekbarController,true)
+        playUrl=typedArray.getString(R.styleable.EasyVideo_playUrl);
         typedArray.recycle()
     }
 
@@ -184,6 +195,9 @@ class EasyVideo : ConstraintLayout {
             params = view!!.layoutParams as LayoutParams
             params!!.bottomToBottom = R.id.medially_view_id
             view!!.layoutParams = params
+            if (!isShowSeekbar){
+               view!!.visibility= View.GONE
+            }
             addView(view)
 
             reduceAdd = TextView(context)
@@ -205,6 +219,7 @@ class EasyVideo : ConstraintLayout {
             loading!!.layoutParams = progressbarLayout
             loading!!.visibility= View.GONE
             addView(loading)
+            mHandler.sendEmptyMessage(PLAY_URL)
         }
     }
 
@@ -264,6 +279,15 @@ class EasyVideo : ConstraintLayout {
                     playPause!!.isPressed = false
                     playPause!!.isFocusable = false
                 }
+                PLAY_URL->{
+                    if (autoPlay==0){
+                        if (null!=playUrl){
+                            loadVideo(playUrl!!)
+                        }else{
+                            Toast.makeText(context,"auto play  failure , beacuse play url is null ! Do you really set the url property in xml ?",Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             }
             false
         }
@@ -273,6 +297,7 @@ class EasyVideo : ConstraintLayout {
         seekBar!!.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 pg = progress
+                ISTOUNCHUP=false
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -280,11 +305,13 @@ class EasyVideo : ConstraintLayout {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 seekBar!!.progress = pg
+
                 mediaPlaySurfaceView!!.seekTo(pg)
                 mediaPlaySurfaceView!!.play()
                 if (null != mediaPlaySurfaceView) {
                     mediaPlaySurfaceView!!.updateProgress()
                 }
+                ISTOUNCHUP=true
             }
         })
     }

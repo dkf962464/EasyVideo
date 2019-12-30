@@ -95,60 +95,62 @@ class MediaPlaySurfaceView : SurfaceView {
 //        }
         mHandler = initHandler()
         setOnTouchListener { _, event ->
-            val textView = rootView.findViewById<TextView>(R.id.rd_id)
-            val seekBar = rootView.findViewById<SeekBar>(R.id.seek_bar)
-            val durationTime: String = BaseUtil.millToMin(binder!!.getDuration())
-            when (event.action) {
-                MotionEvent.ACTION_MOVE -> {
-                    textView.visibility = View.VISIBLE
-                    moveX = event.rawX
-                    moveY = event.rawY
-                    Log.e("isMovent", "" + (moveY!!) + "\t" + downY!! + "\t" + moveX)
-                    if (moveX!! - downX!! > 0) {
-                        type = 0
-                        currentProgress += 150
-                        val current: String = BaseUtil.millToMin(binder!!.getCurrenPostion() + currentProgress)
-                        if (durationTime.length <= 4) {
-                            settingStyle(textView, durationTime, current, 5)
-                        } else {
-                            settingStyle(textView, durationTime, current, 6)
-                        }
-                    } else {
-                        type = 1
-                        currentProgress -= 150
-                        reduce = BaseUtil.millToMin(binder!!.getCurrenPostion() - abs(currentProgress))
-                        if (binder!!.getCurrenPostion() - abs(currentProgress) <= 0) {
-                            reduce = if (durationTime.length <= 4) {
-                                "0:00"
+            if (EasyVideo.isTounch){
+                val textView = rootView.findViewById<TextView>(R.id.rd_id)
+                val seekBar = rootView.findViewById<SeekBar>(R.id.seek_bar)
+                val durationTime: String = BaseUtil.millToMin(binder!!.getDuration())
+                when (event.action) {
+                    MotionEvent.ACTION_MOVE -> {
+                        textView.visibility = View.VISIBLE
+                        moveX = event.rawX
+                        moveY = event.rawY
+                        Log.e("isMovent", "" + (moveY!!) + "\t" + downY!! + "\t" + moveX)
+                        if (moveX!! - downX!! > 0) {
+                            type = 0
+                            currentProgress += 150
+                            val current: String = BaseUtil.millToMin(binder!!.getCurrenPostion() + currentProgress)
+                            if (durationTime.length <= 4) {
+                                settingStyle(textView, durationTime, current, 5)
                             } else {
-                                "00:00"
+                                settingStyle(textView, durationTime, current, 6)
+                            }
+                        } else {
+                            type = 1
+                            currentProgress -= 150
+                            reduce = BaseUtil.millToMin(binder!!.getCurrenPostion() - abs(currentProgress))
+                            if (binder!!.getCurrenPostion() - abs(currentProgress) <= 0) {
+                                reduce = if (durationTime.length <= 4) {
+                                    "0:00"
+                                } else {
+                                    "00:00"
+                                }
+                            }
+                            if (durationTime.length <= 4) {
+                                settingStyle(textView, durationTime, reduce!!, 5)
+                            } else {
+                                settingStyle(textView, durationTime, reduce!!, 6)
                             }
                         }
-                        if (durationTime.length <= 4) {
-                            settingStyle(textView, durationTime, reduce!!, 5)
-                        } else {
-                            settingStyle(textView, durationTime, reduce!!, 6)
+                        beforeMoveDistance = moveX!!
+                        Log.e("isMovent", "ve\t$beforeMoveDistance")
+                    }
+                    MotionEvent.ACTION_DOWN -> {
+                        Log.e("actionEvent", "ACTION_DOWN")
+                        downX = event.rawX
+                        downY = event.rawY
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        Log.e("actionEvent", "ACTION_UP")
+                        if (type == 0) {
+                            seekBar!!.progress = binder!!.getCurrenPostion() + currentProgress
+                            binder!!.seekTo(binder!!.getCurrenPostion() + currentProgress)
+                        } else if (type == 1) {
+                            seekBar!!.progress = binder!!.getCurrenPostion() - abs(currentProgress)
+                            binder!!.seekTo(binder!!.getCurrenPostion() - abs(currentProgress))
                         }
+                        textView.visibility = View.GONE
+                        currentProgress = 0
                     }
-                    beforeMoveDistance = moveX!!
-                    Log.e("isMovent", "ve\t$beforeMoveDistance")
-                }
-                MotionEvent.ACTION_DOWN -> {
-                    Log.e("actionEvent", "ACTION_DOWN")
-                    downX = event.rawX
-                    downY = event.rawY
-                }
-                MotionEvent.ACTION_UP -> {
-                    Log.e("actionEvent", "ACTION_UP")
-                    if (type == 0) {
-                        seekBar!!.progress = binder!!.getCurrenPostion() + currentProgress
-                        binder!!.seekTo(binder!!.getCurrenPostion() + currentProgress)
-                    } else if (type == 1) {
-                        seekBar!!.progress = binder!!.getCurrenPostion() - abs(currentProgress)
-                        binder!!.seekTo(binder!!.getCurrenPostion() - abs(currentProgress))
-                    }
-                    textView.visibility = View.GONE
-                    currentProgress = 0
                 }
             }
             true
@@ -233,11 +235,12 @@ class MediaPlaySurfaceView : SurfaceView {
                         current!!.text = BaseUtil.millToMin(videoAllTime!!)
                     }
                     seekBar!!.progress = binder!!.getCurrenPostion()
+
                     beforTime = binder!!.getCurrenPostion()
                     mHandler.sendEmptyMessageDelayed(CURRENT_TIME, 500)
                 }
                 BUFFER_PROGRESS -> {
-                    seekBar!!.incrementSecondaryProgressBy(secondProgress)
+                    Log.e("testLastTime","$secondProgress*1500")
                     seekBar!!.secondaryProgress = secondProgress
                 }
             }
@@ -262,8 +265,7 @@ class MediaPlaySurfaceView : SurfaceView {
                 videoAllTime = binder!!.getDuration()
                 seekBar!!.max = videoAllTime!!
                 player!!.setDisplay(holder)
-                player!!.start()
-                mHandler.sendEmptyMessage(CURRENT_TIME)
+                play()
             }
 
             player!!.setOnCompletionListener {
