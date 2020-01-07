@@ -10,10 +10,6 @@
             android:id="@+id/video"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"
-            app:isAutoPlay="play"
-            app:playUrl="http://fs.mv.web.kugou.com/201912301132/cd8b6acba4f6b42292c078666b27cb32/G165/M09/1F/15/RYcBAF0S2lyAf9K9A9wDStwL8b0590.mp4"
-            app:isShowSeekbarController="true"
-            app:isTounch="false"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_height="wrap_content"/>
@@ -26,6 +22,6 @@
             android:layout_width="wrap_content"
             android:text="On My Way"
             android:layout_height="wrap_content"
-            android:onClick="click"
-    />
+            android:onClick="click"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

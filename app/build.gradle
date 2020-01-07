@@ -5,7 +5,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.rocky.kotlinplaysurface"
-        minSdkVersion 19
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -34,5 +34,5 @@ dependencies {
     implementation('com.squareup.retrofit2:converter-gson:2.4.0') {
         exclude group: 'com.google.code.gson'
     }
-    implementation 'com.github.princekin-f:EasyFloat:1.1.3'
+    implementation 'androidx.cardview:cardview:1.0.0'
 }

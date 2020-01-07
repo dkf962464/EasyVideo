@@ -23,6 +23,7 @@ import android.widget.TextView
 import com.media.kvideo.R
 import com.media.kvideo.services.VideoServices
 import com.media.kvideo.util.BaseUtil
+import org.w3c.dom.Text
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -41,9 +42,14 @@ class MediaPlaySurfaceView : SurfaceView {
     private var binder: VideoServices.VideoBinder? = null
     //播放视频
     private var VIDEO: Int = 0
+
     //缓冲区
     private var BUFFER_PROGRESS = 2
     private var CURRENT_TIME = 1
+    //快进快退位移
+    private var FASTFORWARD = 3
+    //快进快退视图
+    private var textView: TextView? = null
     private var mHandler: Handler
     private var playerUrl: String? = null
 
@@ -65,16 +71,14 @@ class MediaPlaySurfaceView : SurfaceView {
     private var progressBar: ProgressBar? = null
     private var beforTime: Int = 0
     private var secondProgress: Int = 0
+    private var roootControlView: View? = null
+    private var isMoveEvent = false
+    private var fastForawrd: Boolean = false
 
     //java new
-    constructor(context: Context?) : super(context) {
-        Log.e("constructor", "sss")
-    }
+    constructor(context: Context?) : super(context)
 
-    //xml
-    constructor(context: Context?, attr: AttributeSet?) : super(context, attr) {
-        //在设置属性的时候进行判断，是否为空
-    }
+    constructor(context: Context?, attr: AttributeSet?) : super(context, attr)
 
     init {
 //        if (!BaseUtil.isServiceRunning(context, "com.media.kvideo.services.VideoServices")) {
@@ -95,13 +99,14 @@ class MediaPlaySurfaceView : SurfaceView {
 //        }
         mHandler = initHandler()
         setOnTouchListener { _, event ->
-            if (EasyVideo.isTounch){
-                val textView = rootView.findViewById<TextView>(R.id.rd_id)
+            if (EasyVideo.isTounch) {
+                textView = rootView.findViewById(R.id.rd_id)
                 val seekBar = rootView.findViewById<SeekBar>(R.id.seek_bar)
                 val durationTime: String = BaseUtil.millToMin(binder!!.getDuration())
                 when (event.action) {
                     MotionEvent.ACTION_MOVE -> {
-                        textView.visibility = View.VISIBLE
+                        isMoveEvent = true
+                        textView!!.visibility = View.VISIBLE
                         moveX = event.rawX
                         moveY = event.rawY
                         Log.e("isMovent", "" + (moveY!!) + "\t" + downY!! + "\t" + moveX)
@@ -109,53 +114,73 @@ class MediaPlaySurfaceView : SurfaceView {
                             type = 0
                             currentProgress += 150
                             val current: String = BaseUtil.millToMin(binder!!.getCurrenPostion() + currentProgress)
-                            if (durationTime.length <= 4) {
-                                settingStyle(textView, durationTime, current, 5)
-                            } else {
-                                settingStyle(textView, durationTime, current, 6)
+                            when {
+                                current.length <= 4 -> settingStyle(textView!!, durationTime, current, 5)
+                                current.length <= 5 -> settingStyle(textView!!, durationTime, current, 6)
+                                else -> settingStyle(textView!!, durationTime, current, 7)
                             }
                         } else {
                             type = 1
                             currentProgress -= 150
                             reduce = BaseUtil.millToMin(binder!!.getCurrenPostion() - abs(currentProgress))
                             if (binder!!.getCurrenPostion() - abs(currentProgress) <= 0) {
-                                reduce = if (durationTime.length <= 4) {
-                                    "0:00"
-                                } else {
-                                    "00:00"
+                                reduce = when {
+                                    durationTime.length <= 4 -> "0:00"
+                                    durationTime.length <= 5 -> "00:00"
+                                    else -> "00:00"
                                 }
                             }
-                            if (durationTime.length <= 4) {
-                                settingStyle(textView, durationTime, reduce!!, 5)
-                            } else {
-                                settingStyle(textView, durationTime, reduce!!, 6)
+                            when {
+                                durationTime.length <= 4 -> settingStyle(textView!!, durationTime, reduce!!, 5)
+                                durationTime.length <= 5 -> settingStyle(textView!!, durationTime, reduce!!, 6)
+                                else -> settingStyle(textView!!, durationTime, reduce!!, 7)
                             }
                         }
                         beforeMoveDistance = moveX!!
+                        if (!fastForawrd) {
+                            mHandler.sendEmptyMessage(FASTFORWARD)
+                            fastForawrd = true
+                        }
                         Log.e("isMovent", "ve\t$beforeMoveDistance")
                     }
                     MotionEvent.ACTION_DOWN -> {
                         Log.e("actionEvent", "ACTION_DOWN")
+                        isMoveEvent = false
                         downX = event.rawX
                         downY = event.rawY
                     }
                     MotionEvent.ACTION_UP -> {
                         Log.e("actionEvent", "ACTION_UP")
-                        if (type == 0) {
-                            seekBar!!.progress = binder!!.getCurrenPostion() + currentProgress
-                            binder!!.seekTo(binder!!.getCurrenPostion() + currentProgress)
-                        } else if (type == 1) {
-                            seekBar!!.progress = binder!!.getCurrenPostion() - abs(currentProgress)
-                            binder!!.seekTo(binder!!.getCurrenPostion() - abs(currentProgress))
+                        if (!isMoveEvent) {
+                            if (null != roootControlView) {
+                                if (BaseUtil.isShowControl) {
+                                    BaseUtil.translationAnim(roootControlView!!, false)
+                                } else {
+                                    BaseUtil.translationAnim(roootControlView!!, true)
+                                }
+                            }
+                            isMoveEvent = false
                         }
-                        textView.visibility = View.GONE
+
+                        if (abs(currentProgress) > 300) {
+                            if (type == 0) {
+                                seekBar!!.progress = binder!!.getCurrenPostion() + currentProgress
+                                binder!!.seekTo(binder!!.getCurrenPostion() + currentProgress)
+                            } else if (type == 1) {
+                                seekBar!!.progress = binder!!.getCurrenPostion() - abs(currentProgress)
+                                binder!!.seekTo(binder!!.getCurrenPostion() - abs(currentProgress))
+                            }
+                            if (null != textView) {
+                                BaseUtil.fastForward(textView!!, false)
+                            }
+                        }
+                        fastForawrd = false
                         currentProgress = 0
                     }
                 }
             }
             true
         }
-
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -203,13 +228,15 @@ class MediaPlaySurfaceView : SurfaceView {
         current: TextView?,
         allTime: TextView?,
         seekBar: SeekBar?,
-        progressBar: ProgressBar?
+        progressBar: ProgressBar?,
+        view: View?
     ) {
         playerUrl = playUrl
         this.current = current
         this.allTime = allTime
         this.seekBar = seekBar
         this.progressBar = progressBar
+        this.roootControlView = view
         if (null != playUrl) {
             mHandler.sendEmptyMessage(VIDEO)
         } else {
@@ -240,8 +267,11 @@ class MediaPlaySurfaceView : SurfaceView {
                     mHandler.sendEmptyMessageDelayed(CURRENT_TIME, 500)
                 }
                 BUFFER_PROGRESS -> {
-                    Log.e("testLastTime","$secondProgress*1500")
+                    Log.e("testLastTime", "$secondProgress*2500")
                     seekBar!!.secondaryProgress = secondProgress
+                }
+                FASTFORWARD -> {
+                    BaseUtil.fastForward(textView!!, true)
                 }
             }
             false
@@ -290,6 +320,7 @@ class MediaPlaySurfaceView : SurfaceView {
 
     fun destroy() {
         context.unbindService(connection!!)
+        this.destroy()
     }
 
     fun updateProgress() {
@@ -349,9 +380,9 @@ class MediaPlaySurfaceView : SurfaceView {
     private fun settingStyle(textView: TextView, durationTime: String, currentTime: String, position: Int) {
         BaseUtil.setTextColor(
             textView,
-            "$durationTime/$currentTime",
-            Color.RED,
-            Color.BLUE,
+            "$currentTime/$durationTime",
+            Color.WHITE,
+            Color.GREEN,
             position
         )
     }

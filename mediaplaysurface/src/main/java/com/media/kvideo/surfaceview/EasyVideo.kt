@@ -5,7 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.Color
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
@@ -16,6 +16,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.media.kvideo.R
@@ -31,21 +32,21 @@ import com.media.kvideo.util.BaseUtil
 
 class EasyVideo : ConstraintLayout {
     //java new
-    var progressDrawable: Drawable? = null
-    var thumb: Drawable? = null
-    var fullScreen: Drawable? = null
-    var exitFullScreen: Drawable? = null
-    var playPauseIcon: Drawable? = null
-    var startTimeColor: Int = 0
-    var endTimeColor: Int = 0
-    var autoPlay:Int =1
-
-    var isShowSeekbar:Boolean=true
-    var playUrl:String?=null
+    private var progressDrawable: Drawable? = null
+    private var thumb: Drawable? = null
+    private var fullScreen: Drawable? = null
+    private var exitFullScreen: Drawable? = null
+    private var playPauseIcon: Drawable? = null
+    private var startTimeColor: Int = 0
+    private var endTimeColor: Int = 0
+    private var autoPlay: Int = 1
+    private var radius = 0f
+    private var isShowSeekbar: Boolean = true
+    private var playUrl: String? = null
     //一定要设置此view的透明度为0.5f
-    var bottomBackgroundColor: Int = 0
-    var seekBarHeight: Float? = 1f
-    var jvavIsplay:Boolean=false
+    private var bottomBackgroundColor: Int = 0
+    private var seekBarHeight: Float? = 1f
+    var jvavIsplay: Boolean = false
     private var inflater: LayoutInflater? = null
     private var reduceAdd: TextView? = null
     private var allTime: TextView? = null
@@ -59,7 +60,8 @@ class EasyVideo : ConstraintLayout {
     private var mHandler: Handler
     private var UPDATE_PLAY_ICON: Int = 0
     private var UPDATE_PAUSE_ICON: Int = 1
-    private var PLAY_URL:Int=3
+    private var PLAY_URL: Int = 3
+    private var HIDE_CONTROL = 4
     private var params: LayoutParams? = null
     private var current: LayoutParams? = null
     private var progressbarLayout: LayoutParams? = null
@@ -67,16 +69,19 @@ class EasyVideo : ConstraintLayout {
     private var surfaceViewParams: LayoutParams? = null
     private var pg: Int = 0
 
-    companion object{
-         var ISTOUNCHUP:Boolean=true
-        var isTounch:Boolean=true
+    companion object {
+        var ISTOUNCHUP: Boolean = true
+        var isTounch: Boolean = true
     }
+
     constructor(context: Context?) : super(context) {
-        Log.e("aaa666", "constructor")
+        setWillNotDraw(false)
+        initData()
     }
 
     constructor(context: Context?, attr: AttributeSet?) : super(context, attr) {
         context!!
+        setWillNotDraw(false)
         val typedArray = context.obtainStyledAttributes(attr, R.styleable.EasyVideo)
         progressDrawable = typedArray.getDrawable(R.styleable.EasyVideo_progressDrawable)
         thumb = typedArray.getDrawable(R.styleable.EasyVideo_thumb)
@@ -87,25 +92,29 @@ class EasyVideo : ConstraintLayout {
         endTimeColor = typedArray.getColor(R.styleable.EasyVideo_endTimeColor, Color.WHITE)
         bottomBackgroundColor = typedArray.getColor(R.styleable.EasyVideo_bottomBackgroundColor, Color.BLACK)
         seekBarHeight = typedArray.getDimension(R.styleable.EasyVideo_seekBarHeight, 1f)
-        autoPlay=typedArray.getInt(R.styleable.EasyVideo_isAutoPlay,1)
-        isTounch=typedArray.getBoolean(R.styleable.EasyVideo_isTounch,true)
-        isShowSeekbar=typedArray.getBoolean(R.styleable.EasyVideo_isShowSeekbarController,true)
-        playUrl=typedArray.getString(R.styleable.EasyVideo_playUrl);
+        autoPlay = typedArray.getInt(R.styleable.EasyVideo_autoPlay, 1)
+        isTounch = typedArray.getBoolean(R.styleable.EasyVideo_isTounch, true)
+        isShowSeekbar = typedArray.getBoolean(R.styleable.EasyVideo_isShowSeekbarController, true)
+        playUrl = typedArray.getString(R.styleable.EasyVideo_playUrl)
+        radius = typedArray.getDimension(R.styleable.EasyVideo_radius, 0f)
         typedArray.recycle()
+        initData()
     }
 
     //横竖屏切换
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressLint("ObsoleteSdkInt")
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
         seekBar
+        BaseUtil.clearAnim(context) //清除横竖屏切换的动画，避免卡顿
         val currentParams: LayoutParams = currentTime!!.layoutParams as LayoutParams
         val allTimeParams: LayoutParams = allTime!!.layoutParams as LayoutParams
         val playPauseParams: LayoutParams = playPause!!.layoutParams as LayoutParams
         val fullScreenViewParams: LayoutParams = fullScreenView!!.layoutParams as LayoutParams
         if (newConfig!!.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setWeight(currentParams, currentTime, 0.1f)
-            setWeight(allTimeParams, allTime, 0.1f)
+            setWeight(currentParams, currentTime, 0.2f)
+            setWeight(allTimeParams, allTime, 0.2f)
             setWeight(playPauseParams, playPause, 0.15f)
             setWeight(fullScreenViewParams, fullScreenView, 0.15f)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -115,10 +124,11 @@ class EasyVideo : ConstraintLayout {
                 mediaPlaySurfaceView!!.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             }
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             BaseUtil.showStatusBar(context as Activity)
-            setWeight(currentParams, currentTime, 0.4f)
-            setWeight(allTimeParams, allTime, 0.4f)
+            setWeight(currentParams, currentTime, 0.5f)
+            setWeight(allTimeParams, allTime, 0.5f)
             setWeight(playPauseParams, playPause, 0.2f)
             setWeight(fullScreenViewParams, fullScreenView, 0.2f)
             if (null != mediaPlaySurfaceView) {
@@ -161,11 +171,8 @@ class EasyVideo : ConstraintLayout {
     }
 
     private fun initData() {
-        //因为横竖屏的时候需要重绘全屏按钮，所以把这个方法暴露子外以用来更新
         settingPlayIcon()
-        //防止多次重绘，横竖屏切换会黑屏的问题
         if (childCount <= 0) {
-            BaseUtil.clearAnim(context) //清除横竖屏切换的动画，避免卡顿
             val value: Activity = context as Activity
             currentTime!!.setTextColor(startTimeColor)
             allTime!!.setTextColor(endTimeColor)
@@ -195,9 +202,10 @@ class EasyVideo : ConstraintLayout {
             params = view!!.layoutParams as LayoutParams
             params!!.bottomToBottom = R.id.medially_view_id
             view!!.layoutParams = params
-            if (!isShowSeekbar){
-               view!!.visibility= View.GONE
+            if (!isShowSeekbar) {
+                view!!.visibility = View.GONE
             }
+            view!!.setBackgroundColor(Color.TRANSPARENT)
             addView(view)
 
             reduceAdd = TextView(context)
@@ -206,10 +214,10 @@ class EasyVideo : ConstraintLayout {
             current!!.leftToLeft = R.id.medially_view_id
             current!!.rightToRight = R.id.medially_view_id
             current!!.topToTop = R.id.medially_view_id
-            current!!.topMargin = BaseUtil.dp2px(context, 20f)
+            current!!.topMargin = BaseUtil.dp2px(context, 40f)
             reduceAdd!!.layoutParams = current
             addView(reduceAdd)
-            loading= ProgressBar(context)
+            loading = ProgressBar(context)
             progressbarLayout = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             progressbarLayout!!.leftToLeft = R.id.medially_view_id
             progressbarLayout!!.rightToRight = R.id.medially_view_id
@@ -217,7 +225,7 @@ class EasyVideo : ConstraintLayout {
             progressbarLayout!!.bottomToBottom = R.id.medially_view_id
             loading!!.indeterminateDrawable = ContextCompat.getDrawable(context, R.drawable.loading_rote_anim)
             loading!!.layoutParams = progressbarLayout
-            loading!!.visibility= View.GONE
+            loading!!.visibility = View.GONE
             addView(loading)
             mHandler.sendEmptyMessage(PLAY_URL)
         }
@@ -225,17 +233,37 @@ class EasyVideo : ConstraintLayout {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        initData()
         val resolveWidth = mediaPlaySurfaceView!!.resolveSize(measuredWidth, widthMeasureSpec, 0)
         val resolveHeight = mediaPlaySurfaceView!!.resolveSize(measuredHeight, heightMeasureSpec, 1)
         setMeasuredDimension(resolveWidth!!, resolveHeight!!)
     }
 
+    @SuppressLint("DrawAllocation")
+    override fun onDraw(canvas: Canvas?) {
+        if (radius != 0f) {
+            val rectf = RectF(0f, 0f, width.toFloat(), height.toFloat())
+            clip(canvas, radius, radius, rectf)
+            return
+        }
+        super.onDraw(canvas)
+    }
+
     fun loadVideo(playUrl: String) {
         if (null != mediaPlaySurfaceView) {
             mHandler.sendEmptyMessage(UPDATE_PLAY_ICON)
-            mediaPlaySurfaceView!!.playVideo(playUrl, currentTime, allTime, seekBar,loading)
+            mediaPlaySurfaceView!!.playVideo(playUrl, currentTime, allTime, seekBar, loading, view)
         }
+    }
+
+    private fun clip(canvas: Canvas?, radiusX: Float, RadiusY: Float, rectF: RectF) {
+        val path = Path()
+        path.addRoundRect(rectF, radiusX, RadiusY, Path.Direction.CCW)
+        if (Build.VERSION.SDK_INT >= 26) {
+            canvas!!.clipPath(path)
+        } else {
+            canvas!!.clipPath(path, Region.Op.REPLACE)
+        }
+
     }
 
     private fun playVideo() {
@@ -279,13 +307,22 @@ class EasyVideo : ConstraintLayout {
                     playPause!!.isPressed = false
                     playPause!!.isFocusable = false
                 }
-                PLAY_URL->{
-                    if (autoPlay==0){
-                        if (null!=playUrl){
+                PLAY_URL -> {
+                    if (autoPlay == 0) {
+                        if (null != playUrl) {
                             loadVideo(playUrl!!)
-                        }else{
-                            Toast.makeText(context,"auto play  failure , beacuse play url is null ! Do you really set the url property in xml ?",Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "auto play  failure , beacuse play url is null ! Do you really set the url property in xml ?",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
+                    }
+                }
+                HIDE_CONTROL -> {
+                    if (!ISTOUNCHUP) {
+                        BaseUtil.translationAnim(view!!, false)
                     }
                 }
             }
@@ -297,7 +334,7 @@ class EasyVideo : ConstraintLayout {
         seekBar!!.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 pg = progress
-                ISTOUNCHUP=false
+                ISTOUNCHUP = false
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -305,13 +342,13 @@ class EasyVideo : ConstraintLayout {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 seekBar!!.progress = pg
-
                 mediaPlaySurfaceView!!.seekTo(pg)
                 mediaPlaySurfaceView!!.play()
                 if (null != mediaPlaySurfaceView) {
                     mediaPlaySurfaceView!!.updateProgress()
                 }
-                ISTOUNCHUP=true
+                mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 3000)
+                ISTOUNCHUP = true
             }
         })
     }

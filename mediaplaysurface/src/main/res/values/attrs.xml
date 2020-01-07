@@ -23,12 +23,13 @@
         <attr name="endTimeColor" format="color" />
         <attr name="bottomBackgroundColor" format="color" />
         <attr name="seekBarHeight" format="dimension" />
-        <attr name="isAutoPlay" format="enum" >
+        <attr name="autoPlay" format="enum" >
             <enum name="play" value="0"/>
             <enum name="display" value="1"/>
         </attr>
         <attr name="isTounch" format="boolean"/>
         <attr name="isShowSeekbarController" format="boolean"/>
         <attr name="playUrl" format="string"/>
+        <attr name="radius" format="dimension"/>
     </declare-styleable>
 </resources>

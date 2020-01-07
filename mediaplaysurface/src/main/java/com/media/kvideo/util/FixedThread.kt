@@ -17,7 +17,6 @@ object FixedThread {
         var mFixedThreadPool: ExecutorService? = null
         if (null == mFixedThreadPool) {
             mFixedThreadPool = Executors.newFixedThreadPool(3)
-
         }
         mFixedThreadPool!!.execute {
             Log.e("execute666", "run: " + FixedThread::class.java)

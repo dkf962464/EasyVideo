@@ -4,11 +4,10 @@ import android.animation.ValueAnimator
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
-import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.media.kvideo.util.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,12 +18,13 @@ class MainActivity : AppCompatActivity() {
     private var onMyWay: String =
         "http://m.kugou.com/app/i/mv.php?cmd=100&hash=cec895f084995e79068dc1a040d7dc58&ismp3=1&ext=mp4"
     private var starSky: String =
-        "http://m.kugou.com/app/i/mv.php?cmd=100&hash=752a44c3e8b157936cba9eb2f461cd3c&ismp3=1&ext=mp4"
+        "http://m.kugou.com/app/i/mv.php?cmd=100&hash=eb6bb33f2f2dc58b996bc67fbc86ec85&ismp3=1&ext=mp4"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         StatusBarUtil.immersive(this, Color.TRANSPARENT, 0.5f)
         setContentView(R.layout.activity_main)
+        video.loadVideo("http://vipmp4i.vodfile.m1905.com/202001071410/8b5aa5b4429872d8ffad16e0cd500f51/movie/2020/01/03/m20200103E930C8L6PJO4F7MM/E59643F51FB145C3F3A4BD49C.mp4")
 //        requestMv(starSky)
 //        val string: File =Environment.getExternalStorageDirectory()
 //        val list =  string.listFiles()
@@ -35,13 +35,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun click(v: View) {
-//        Log.e("lrcPath",File(Environment.getExternalStorageDirectory().absolutePath+"/at","oh.krc").absolutePath)
-//        v.visibility=View.GONE
-//        val reader = LyricsReader()
-//        reader.loadLrc()
-//        lrc.lyricsReader= reader
-//        video!!.pauseVideo()
-//        ManyLyricsView(this).play()
         requestMv(onMyWay)
         v.alpha=0f
         v.visibility=View.GONE
@@ -49,10 +42,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-
+        //在ondestroy调用这个方法，避免内存不足崩掉
         video!!.destroyMedially()
-        //如果只有声音没有图像的话，调用此方法即可
-//        video.invalidateVideo()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -70,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             ofInt.repeatCount = 0
             ofInt.addUpdateListener {
                 val any: Float = it.animatedValue as Float
-                video!!.alpha = any
+//                video!!.alpha = any
             }
             ofInt.interpolator = LinearInterpolator()
             ofInt.start()
