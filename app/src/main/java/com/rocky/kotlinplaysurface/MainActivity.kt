@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         StatusBarUtil.immersive(this, Color.TRANSPARENT, 0.5f)
         setContentView(R.layout.activity_main)
-        video.loadVideo("http://vipmp4i.vodfile.m1905.com/202001071410/8b5aa5b4429872d8ffad16e0cd500f51/movie/2020/01/03/m20200103E930C8L6PJO4F7MM/E59643F51FB145C3F3A4BD49C.mp4")
-//        requestMv(starSky)
+//        video.loadVideo("http://vipmp4i.vodfile.m1905.com/202001071410/8b5aa5b4429872d8ffad16e0cd500f51/movie/2020/01/03/m20200103E930C8L6PJO4F7MM/E59643F51FB145C3F3A4BD49C.mp4")
+        requestMv(onMyWay)
 //        val string: File =Environment.getExternalStorageDirectory()
 //        val list =  string.listFiles()
 //        Log.e("FileName","$"+list.size)
@@ -35,9 +35,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun click(v: View) {
-        requestMv(onMyWay)
-        v.alpha=0f
-        v.visibility=View.GONE
+        if (topleft.isChecked){
+            video.topLeftRadius=35f
+        }else{
+            video.topLeftRadius=0f
+        }
+        if (topright.isChecked){
+            video.topRightRadius=35f
+        }else{
+            video.topRightRadius=0f
+        }
+        if (bottomleft.isChecked){
+            video.bottomLeftRadius=35f
+        }else{
+            video.bottomLeftRadius=0f
+        }
+        if (bottomright.isChecked){
+            video.bottomRightRadius=35f
+        }else{
+            video.bottomRightRadius=0f
+        }
+        if (radius.isChecked){
+            video.radius=35f
+        }else{
+            video.radius=0f
+        }
+        video.invalidate()
+//        requestMv(onMyWay)
+//        v.alpha=0f
+//        v.visibility=View.GONE
     }
 
     override fun onDestroy() {
@@ -48,11 +74,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
-        if (newConfig!!.orientation==Configuration.ORIENTATION_LANDSCAPE){
-            but.visibility=View.GONE
-        }else{
-            but.visibility=View.VISIBLE
-        }
     }
     private fun settingAlph() {
         runOnUiThread {

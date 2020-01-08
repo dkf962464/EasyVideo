@@ -40,7 +40,11 @@ class EasyVideo : ConstraintLayout {
     private var startTimeColor: Int = 0
     private var endTimeColor: Int = 0
     private var autoPlay: Int = 1
-    private var radius = 0f
+    var radius = 0f
+    var topLeftRadius = 0f
+    var topRightRadius = 0f
+    var bottomRightRadius = 0f
+    var bottomLeftRadius = 0f
     private var isShowSeekbar: Boolean = true
     private var playUrl: String? = null
     //一定要设置此view的透明度为0.5f
@@ -97,6 +101,10 @@ class EasyVideo : ConstraintLayout {
         isShowSeekbar = typedArray.getBoolean(R.styleable.EasyVideo_isShowSeekbarController, true)
         playUrl = typedArray.getString(R.styleable.EasyVideo_playUrl)
         radius = typedArray.getDimension(R.styleable.EasyVideo_radius, 0f)
+        topLeftRadius = typedArray.getDimension(R.styleable.EasyVideo_topLeftRadius, 0f)
+        topRightRadius = typedArray.getDimension(R.styleable.EasyVideo_topRightRadius, 0f)
+        bottomRightRadius = typedArray.getDimension(R.styleable.EasyVideo_bottomRightRadius, 0f)
+        bottomLeftRadius = typedArray.getDimension(R.styleable.EasyVideo_bottomLeftRadius, 0f)
         typedArray.recycle()
         initData()
     }
@@ -117,25 +125,25 @@ class EasyVideo : ConstraintLayout {
             setWeight(allTimeParams, allTime, 0.2f)
             setWeight(playPauseParams, playPause, 0.15f)
             setWeight(fullScreenViewParams, fullScreenView, 0.15f)
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 BaseUtil.setLandScreenStatusBarState(context as Activity)
             }
             if (null != mediaPlaySurfaceView) {
                 mediaPlaySurfaceView!!.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             }
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             BaseUtil.showStatusBar(context as Activity)
             setWeight(currentParams, currentTime, 0.5f)
             setWeight(allTimeParams, allTime, 0.5f)
             setWeight(playPauseParams, playPause, 0.2f)
             setWeight(fullScreenViewParams, fullScreenView, 0.2f)
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             if (null != mediaPlaySurfaceView) {
                 mediaPlaySurfaceView!!.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             }
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         }
+
     }
 
     init {
@@ -172,7 +180,7 @@ class EasyVideo : ConstraintLayout {
 
     private fun initData() {
         settingPlayIcon()
-        if (childCount <= 0) {
+
             val value: Activity = context as Activity
             currentTime!!.setTextColor(startTimeColor)
             allTime!!.setTextColor(endTimeColor)
@@ -228,23 +236,20 @@ class EasyVideo : ConstraintLayout {
             loading!!.visibility = View.GONE
             addView(loading)
             mHandler.sendEmptyMessage(PLAY_URL)
-        }
+
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val resolveWidth = mediaPlaySurfaceView!!.resolveSize(measuredWidth, widthMeasureSpec, 0)
         val resolveHeight = mediaPlaySurfaceView!!.resolveSize(measuredHeight, heightMeasureSpec, 1)
         setMeasuredDimension(resolveWidth!!, resolveHeight!!)
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
-        if (radius != 0f) {
-            val rectf = RectF(0f, 0f, width.toFloat(), height.toFloat())
-            clip(canvas, radius, radius, rectf)
-            return
-        }
+        val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
+        clip(canvas, radius, radius, rect)
         super.onDraw(canvas)
     }
 
@@ -257,7 +262,24 @@ class EasyVideo : ConstraintLayout {
 
     private fun clip(canvas: Canvas?, radiusX: Float, RadiusY: Float, rectF: RectF) {
         val path = Path()
-        path.addRoundRect(rectF, radiusX, RadiusY, Path.Direction.CCW)
+        if (radius <= 0) {
+            val floatArray = floatArrayOf(
+                topLeftRadius,
+                topLeftRadius,
+                topRightRadius,
+                topRightRadius,
+                bottomRightRadius,
+                bottomRightRadius,
+                bottomLeftRadius,
+                bottomLeftRadius
+            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                path.addRoundRect(rectF.left, rectF.top, rectF.width(), rectF.height(), floatArray, Path.Direction.CCW)
+            }
+        } else {
+            path.addRoundRect(rectF, radiusX, RadiusY, Path.Direction.CCW)
+        }
+
         if (Build.VERSION.SDK_INT >= 26) {
             canvas!!.clipPath(path)
         } else {

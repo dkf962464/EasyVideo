@@ -6,22 +6,50 @@
         android:layout_width="match_parent" android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-    <com.media.kvideo.surfaceview.EasyVideo
-            android:id="@+id/video"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="match_parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_height="wrap_content"/>
+        <com.media.kvideo.surfaceview.EasyVideo
+                android:id="@+id/video"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="match_parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_height="wrap_content"/>
+
     <Button
             android:id="@+id/but"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_width="wrap_content"
-            android:text="On My Way"
+            android:text="@string/on_my_way"
+            android:layout_marginBottom="80dp"
             android:layout_height="wrap_content"
             android:onClick="click"/>
 
+    <CheckBox
+            android:text="topleft"
+
+            android:id="@+id/topleft" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/but"
+            app:layout_constraintRight_toLeftOf="@id/topright"/>
+    <CheckBox android:id="@+id/topright" app:layout_constraintTop_toTopOf="@id/topleft"
+              android:text="topright"
+              app:layout_constraintLeft_toRightOf="@id/topleft" app:layout_constraintRight_toLeftOf="@id/bottomleft"
+              android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <CheckBox android:id="@+id/bottomleft" app:layout_constraintLeft_toRightOf="@id/topright"
+              android:text="bottomleft"
+              app:layout_constraintRight_toLeftOf="@id/bottomright" app:layout_constraintTop_toTopOf="@id/topright"
+              android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <CheckBox android:id="@+id/bottomright" app:layout_constraintLeft_toRightOf="@id/bottomleft"
+              android:text="bottomright"
+              app:layout_constraintRight_toRightOf="parent" app:layout_constraintTop_toTopOf="@id/bottomleft"
+              android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content"
+              app:layout_constraintLeft_toLeftOf="parent"
+              app:layout_constraintRight_toRightOf="parent"
+              android:text="radius"
+              android:id="@+id/radius"
+              app:layout_constraintBottom_toTopOf="@id/topleft"
+    />
 </androidx.constraintlayout.widget.ConstraintLayout>
