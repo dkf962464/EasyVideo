@@ -21,6 +21,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.media.kvideo.R
 import com.media.kvideo.util.BaseUtil
+import java.lang.Math.abs
 
 /**
  * create by 2019/10/29
@@ -72,7 +73,7 @@ class EasyVideo : ConstraintLayout {
     private var loading: ProgressBar? = null
     private var surfaceViewParams: LayoutParams? = null
     private var pg: Int = 0
-
+    private var YMargin:Float=0f
     companion object {
         var ISTOUNCHUP: Boolean = true
         var isTounch: Boolean = true
@@ -120,27 +121,38 @@ class EasyVideo : ConstraintLayout {
         val allTimeParams: LayoutParams = allTime!!.layoutParams as LayoutParams
         val playPauseParams: LayoutParams = playPause!!.layoutParams as LayoutParams
         val fullScreenViewParams: LayoutParams = fullScreenView!!.layoutParams as LayoutParams
+
         if (newConfig!!.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Log.e("marginTopIsJl", "ORIENTATION_LANDSCAPE$y")
             setWeight(currentParams, currentTime, 0.2f)
             setWeight(allTimeParams, allTime, 0.2f)
             setWeight(playPauseParams, playPause, 0.15f)
             setWeight(fullScreenViewParams, fullScreenView, 0.15f)
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 BaseUtil.setLandScreenStatusBarState(context as Activity)
             }
             if (null != mediaPlaySurfaceView) {
                 mediaPlaySurfaceView!!.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             }
+            //设置easyvideo在横屏的时候，绝对位置为0，防止出现控件移位问题
+            y=0f
+            top=0
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Log.e("marginTopIsJl", "onConfigurationChanged$y")
             BaseUtil.showStatusBar(context as Activity)
             setWeight(currentParams, currentTime, 0.5f)
             setWeight(allTimeParams, allTime, 0.5f)
             setWeight(playPauseParams, playPause, 0.2f)
             setWeight(fullScreenViewParams, fullScreenView, 0.2f)
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             if (null != mediaPlaySurfaceView) {
                 mediaPlaySurfaceView!!.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            }
+            layoutParams =LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            //在竖屏的时候，设置easyview的绝对位置为第一次测量时候的值，防止出现控件还原到位置的0,0坐标
+            if (y==0f){
+                y= abs(YMargin)
             }
         }
 
@@ -243,11 +255,18 @@ class EasyVideo : ConstraintLayout {
         val resolveWidth = mediaPlaySurfaceView!!.resolveSize(measuredWidth, widthMeasureSpec, 0)
         val resolveHeight = mediaPlaySurfaceView!!.resolveSize(measuredHeight, heightMeasureSpec, 1)
         setMeasuredDimension(resolveWidth!!, resolveHeight!!)
+        Log.e("marginTopIsJl","onMeasure\t$top")
+        //测量控件的结果在此记录，方便在横竖屏的时候使用
+        if (y!=0f){
+            YMargin=y
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
+        Log.e("marginTopIsJl","onDraw\t$top")
+
         val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
         clip(canvas, radius, radius, rect)
         super.onDraw(canvas)
@@ -273,6 +292,7 @@ class EasyVideo : ConstraintLayout {
                 bottomLeftRadius,
                 bottomLeftRadius
             )
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 path.addRoundRect(rectF.left, rectF.top, rectF.width(), rectF.height(), floatArray, Path.Direction.CCW)
             }
@@ -336,7 +356,7 @@ class EasyVideo : ConstraintLayout {
                         } else {
                             Toast.makeText(
                                 context,
-                                "auto play  failure , beacuse play url is null ! Do you really set the url property in xml ?",
+                                " auto play  failure , because play url is null ! Do you really set the url property in xml ?",
                                 Toast.LENGTH_LONG
                             ).show()
                         }

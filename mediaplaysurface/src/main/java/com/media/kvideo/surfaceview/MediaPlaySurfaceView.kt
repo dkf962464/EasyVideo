@@ -42,7 +42,6 @@ class MediaPlaySurfaceView : SurfaceView {
     private var binder: VideoServices.VideoBinder? = null
     //播放视频
     private var VIDEO: Int = 0
-
     //缓冲区
     private var BUFFER_PROGRESS = 2
     private var CURRENT_TIME = 1
@@ -105,8 +104,6 @@ class MediaPlaySurfaceView : SurfaceView {
                 val durationTime: String = BaseUtil.millToMin(binder!!.getDuration())
                 when (event.action) {
                     MotionEvent.ACTION_MOVE -> {
-                        isMoveEvent = true
-                        textView!!.visibility = View.VISIBLE
                         moveX = event.rawX
                         moveY = event.rawY
                         Log.e("isMovent", "" + (moveY!!) + "\t" + downY!! + "\t" + moveX)
@@ -137,13 +134,22 @@ class MediaPlaySurfaceView : SurfaceView {
                             }
                         }
                         beforeMoveDistance = moveX!!
-                        if (!fastForawrd) {
+                        if (isMoveEvent&&abs(currentProgress) >300 ) {
+                            textView!!.visibility = View.VISIBLE
                             mHandler.sendEmptyMessage(FASTFORWARD)
-                            fastForawrd = true
+                            Log.e("isMoventxxxx", "ve\t$beforeMoveDistance")
+                            isMoveEvent = false
                         }
-                        Log.e("isMovent", "ve\t$beforeMoveDistance")
                     }
                     MotionEvent.ACTION_DOWN -> {
+                        if (null != roootControlView) {
+                            if (BaseUtil.isShowControl) {
+                                BaseUtil.translationAnim(roootControlView!!, false)
+                            } else {
+                                BaseUtil.translationAnim(roootControlView!!, true)
+                            }
+                        }
+                        isMoveEvent = true
                         Log.e("actionEvent", "ACTION_DOWN")
                         isMoveEvent = false
                         downX = event.rawX
@@ -151,15 +157,10 @@ class MediaPlaySurfaceView : SurfaceView {
                     }
                     MotionEvent.ACTION_UP -> {
                         Log.e("actionEvent", "ACTION_UP")
-                        if (!isMoveEvent) {
-                            if (null != roootControlView) {
-                                if (BaseUtil.isShowControl) {
-                                    BaseUtil.translationAnim(roootControlView!!, false)
-                                } else {
-                                    BaseUtil.translationAnim(roootControlView!!, true)
-                                }
-                            }
-                            isMoveEvent = false
+                        if (isMoveEvent && null != textView) {
+                            Log.e("isMoventxxxx", "ve")
+                            BaseUtil.fastForward(textView!!, false)
+                            isMoveEvent = true
                         }
 
                         if (abs(currentProgress) > 300) {
@@ -170,11 +171,8 @@ class MediaPlaySurfaceView : SurfaceView {
                                 seekBar!!.progress = binder!!.getCurrenPostion() - abs(currentProgress)
                                 binder!!.seekTo(binder!!.getCurrenPostion() - abs(currentProgress))
                             }
-                            if (null != textView) {
-                                BaseUtil.fastForward(textView!!, false)
-                            }
+
                         }
-                        fastForawrd = false
                         currentProgress = 0
                     }
                 }
@@ -374,7 +372,6 @@ class MediaPlaySurfaceView : SurfaceView {
         if (null != binder) {
             binder!!.seekTo(progress)
         }
-
     }
 
     private fun settingStyle(textView: TextView, durationTime: String, currentTime: String, position: Int) {
