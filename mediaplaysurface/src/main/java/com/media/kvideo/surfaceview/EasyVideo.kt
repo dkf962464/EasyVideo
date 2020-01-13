@@ -123,8 +123,8 @@ class EasyVideo : ConstraintLayout {
         val fullScreenViewParams: LayoutParams = fullScreenView!!.layoutParams as LayoutParams
 
         if (newConfig!!.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            y=0f
             top=0
+            y=0f
             Log.e("marginTopIsJl", "ORIENTATION_LANDSCAPE$y")
             setWeight(currentParams, currentTime, 0.2f)
             setWeight(allTimeParams, allTime, 0.2f)

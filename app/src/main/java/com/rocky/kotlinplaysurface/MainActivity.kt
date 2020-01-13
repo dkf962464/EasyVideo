@@ -23,10 +23,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        StatusBarUtil.immersive(this, Color.TRANSPARENT, 0.5f)
+//        StatusBarUtil.immersive(this, Color.TRANSPARENT, 0.5f)
         setContentView(R.layout.activity_main)
 //        video.loadVideo("http://vipmp4i.vodfile.m1905.com/202001071410/8b5aa5b4429872d8ffad16e0cd500f51/movie/2020/01/03/m20200103E930C8L6PJO4F7MM/E59643F51FB145C3F3A4BD49C.mp4")
-        requestMv(onMyWay)
+//        requestMv(onMyWay)
 //        val string: File =Environment.getExternalStorageDirectory()
 //        val list =  string.listFiles()
 //        Log.e("FileName","$"+list.size)
