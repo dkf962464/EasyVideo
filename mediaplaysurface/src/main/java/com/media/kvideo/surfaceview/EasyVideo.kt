@@ -389,7 +389,7 @@ class EasyVideo : ConstraintLayout {
                 if (null != mediaPlaySurfaceView) {
                     mediaPlaySurfaceView!!.updateProgress()
                 }
-                mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 3000)
+//                mHandler.sendEmptyMessageDelayed(HIDE_CONTROL, 3000)
                 ISTOUNCHUP = true
             }
         })

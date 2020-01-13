@@ -47,6 +47,8 @@ class MediaPlaySurfaceView : SurfaceView {
     private var CURRENT_TIME = 1
     //快进快退位移
     private var FASTFORWARD = 3
+    //定时处理seekbar隐藏
+    private var HIDESEEKBAR=4
     //快进快退视图
     private var textView: TextView? = null
     private var mHandler: Handler
@@ -71,7 +73,7 @@ class MediaPlaySurfaceView : SurfaceView {
     private var beforTime: Int = 0
     private var secondProgress: Int = 0
     private var roootControlView: View? = null
-    private var isMoveEvent = false
+    private var isMoveEvent = true
     private var fastForawrd: Boolean = false
 
     //java new
@@ -149,20 +151,15 @@ class MediaPlaySurfaceView : SurfaceView {
                                 BaseUtil.translationAnim(roootControlView!!, true)
                             }
                         }
-                        isMoveEvent = true
-                        Log.e("actionEvent", "ACTION_DOWN")
-                        isMoveEvent = false
                         downX = event.rawX
                         downY = event.rawY
                     }
                     MotionEvent.ACTION_UP -> {
                         Log.e("actionEvent", "ACTION_UP")
-                        if (isMoveEvent && null != textView) {
-                            Log.e("isMoventxxxx", "ve")
+                        if (!isMoveEvent&&abs(currentProgress) >300){
                             BaseUtil.fastForward(textView!!, false)
-                            isMoveEvent = true
+                            isMoveEvent=true
                         }
-
                         if (abs(currentProgress) > 300) {
                             if (type == 0) {
                                 seekBar!!.progress = binder!!.getCurrenPostion() + currentProgress
@@ -173,6 +170,7 @@ class MediaPlaySurfaceView : SurfaceView {
                             }
 
                         }
+                        mHandler.sendEmptyMessageDelayed(HIDESEEKBAR,4000)
                         currentProgress = 0
                     }
                 }
@@ -270,6 +268,11 @@ class MediaPlaySurfaceView : SurfaceView {
                 }
                 FASTFORWARD -> {
                     BaseUtil.fastForward(textView!!, true)
+                }
+                HIDESEEKBAR->{
+                    if (BaseUtil.isShowControl) {
+                        BaseUtil.translationAnim(roootControlView!!, false)
+                    }
                 }
             }
             false
