@@ -142,7 +142,7 @@ class EasyVideo : ConstraintLayout {
 
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             //在竖屏的时候，设置easyview的绝对位置为第一次测量时候的值，防止出现控件还原到位置的0,0坐标
-            if (y==0f){
+            if (y==0f||y<0f){
                 y= abs(YMargin)
             }
             Log.e("marginTopIsJl", "onConfigurationChanged$y")
