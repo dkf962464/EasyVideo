@@ -123,6 +123,8 @@ class EasyVideo : ConstraintLayout {
         val fullScreenViewParams: LayoutParams = fullScreenView!!.layoutParams as LayoutParams
 
         if (newConfig!!.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            y=0f
+            top=0
             Log.e("marginTopIsJl", "ORIENTATION_LANDSCAPE$y")
             setWeight(currentParams, currentTime, 0.2f)
             setWeight(allTimeParams, allTime, 0.2f)
@@ -135,11 +137,14 @@ class EasyVideo : ConstraintLayout {
                 mediaPlaySurfaceView!!.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             }
             //设置easyvideo在横屏的时候，绝对位置为0，防止出现控件移位问题
-            y=0f
-            top=0
+
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            //在竖屏的时候，设置easyview的绝对位置为第一次测量时候的值，防止出现控件还原到位置的0,0坐标
+            if (y==0f){
+                y= abs(YMargin)
+            }
             Log.e("marginTopIsJl", "onConfigurationChanged$y")
             BaseUtil.showStatusBar(context as Activity)
             setWeight(currentParams, currentTime, 0.5f)
@@ -150,12 +155,7 @@ class EasyVideo : ConstraintLayout {
                 mediaPlaySurfaceView!!.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             }
             layoutParams =LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            //在竖屏的时候，设置easyview的绝对位置为第一次测量时候的值，防止出现控件还原到位置的0,0坐标
-            if (y==0f){
-                y= abs(YMargin)
-            }
         }
-
     }
 
     init {
@@ -351,7 +351,7 @@ class EasyVideo : ConstraintLayout {
                 }
                 PLAY_URL -> {
                     if (autoPlay == 0) {
-                        if (null != playUrl) {
+                        if (null != playUrl && "" != playUrl) {
                             loadVideo(playUrl!!)
                         } else {
                             Toast.makeText(
